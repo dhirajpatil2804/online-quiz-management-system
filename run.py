@@ -1,14 +1,6 @@
-from flask import Flask
+from app import create_app
 
-app = Flask(__name__)
-
-
-@app.route("/")
-def home():
-    return """
-    <h1>Online Quiz Management System</h1>
-    <p>Flask is working successfully!</p>
-    """
+app = create_app()
 
 
 if __name__ == "__main__":
