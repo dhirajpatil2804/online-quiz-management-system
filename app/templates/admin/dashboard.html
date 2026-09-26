@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .navbar {
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #1d4ed8
+            );
+
+            color: white;
+
+            padding: 15px 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+
+            color: white;
+
+            background: #dc2626;
+
+            padding: 9px 16px;
+
+            border-radius: 6px;
+
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+
+            margin: 35px auto;
+
+            padding: 0 20px;
+        }
+
+        .welcome {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            margin: 0 0 10px 0;
+
+            font-size: 30px;
+        }
+
+        .welcome p {
+            margin: 0;
+
+            color: #64748b;
+        }
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    1fr
+                );
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+        }
+
+        .stat-title {
+            color: #64748b;
+
+            font-weight: 600;
+
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+        }
+
+        .section-title {
+            font-size: 23px;
+
+            margin-bottom: 18px;
+        }
+
+        .actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    1fr
+                );
+
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+        }
+
+        .action-card h3 {
+            margin-top: 0;
+
+            margin-bottom: 8px;
+        }
+
+        .action-card p {
+            color: #64748b;
+
+            min-height: 45px;
+        }
+
+        .action-buttons {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+
+            padding: 10px 15px;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: 600;
+        }
+
+        .blue-btn {
+            background: #2563eb;
+        }
+
+        .green-btn {
+            background: #16a34a;
+        }
+
+        .purple-btn {
+            background: #7c3aed;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 850px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 550px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar h2 {
+                font-size: 17px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, {{ user.name }} 👋
+            </h1>
+
+            <p>
+                You are logged in as an Administrator.
+            </p>
+
+        </div>
+
+
+        <!-- Statistics -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Students
+                </div>
+
+                <div class="stat-number">
+                    {{ total_students }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Teachers
+                </div>
+
+                <div class="stat-number">
+                    {{ total_teachers }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Quizzes
+                </div>
+
+                <div class="stat-number">
+                    {{ total_quizzes }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Questions
+                </div>
+
+                <div class="stat-number">
+                    {{ total_questions }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- Management -->
+
+        <h2 class="section-title">
+            Management
+        </h2>
+
+
+        <div class="actions">
+
+
+            <!-- Users -->
+
+            <div class="action-card">
+
+                <h3>
+                    👥 User Management
+                </h3>
+
+                <p>
+                    Manage teachers and students in the system.
+                </p>
+
+                <div class="action-buttons">
+
+                    <a
+                        href="{{ url_for('admin.users') }}"
+                        class="btn blue-btn"
+                    >
+                        Manage Users
+                    </a>
+
+                    <a
+                        href="{{ url_for('admin.add_user') }}"
+                        class="btn green-btn"
+                    >
+                        + Add User
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Quizzes -->
+
+            <div class="action-card">
+
+                <h3>
+                    📝 Quiz Management
+                </h3>
+
+                <p>
+                    View quizzes created by teachers.
+                </p>
+
+                <div class="action-buttons">
+
+                    <a
+                        href="{{ url_for('admin.quizzes') }}"
+                        class="btn purple-btn"
+                    >
+                        View Quizzes
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Reports -->
+
+            <div class="action-card">
+
+                <h3>
+                    📊 Reports
+                </h3>
+
+                <p>
+                    View quiz and student performance reports.
+                </p>
+
+                <div class="action-buttons">
+
+                    <a
+                        href="#"
+                        class="btn blue-btn"
+                    >
+                        Reports
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

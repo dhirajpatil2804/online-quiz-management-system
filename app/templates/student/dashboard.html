@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Student Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+            color: #172033;
+        }
+
+        .navbar {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            padding: 15px 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+        .user-area {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .logout-btn {
+
+            text-decoration: none;
+
+            color: white;
+
+            background: #dc2626;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            font-weight: 600;
+        }
+
+        .container {
+
+            max-width: 1100px;
+
+            margin: 35px auto;
+
+            padding: 0 20px;
+        }
+
+        .welcome {
+
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+
+            margin: 0 0 8px 0;
+
+            font-size: 30px;
+        }
+
+        .welcome p {
+
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 16px;
+        }
+
+        .section-title {
+
+            margin-bottom: 20px;
+
+            font-size: 24px;
+        }
+
+        .quiz-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(280px, 1fr)
+                );
+
+            gap: 20px;
+        }
+
+        .quiz-card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        .quiz-card h3 {
+
+            margin-top: 0;
+
+            margin-bottom: 10px;
+
+            font-size: 20px;
+        }
+
+        .quiz-description {
+
+            color: #64748b;
+
+            min-height: 45px;
+
+            line-height: 1.5;
+        }
+
+        .quiz-details {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+
+            margin: 18px 0;
+        }
+
+        .detail {
+
+            background: #f8fafc;
+
+            padding: 10px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+        }
+
+        .detail strong {
+
+            display: block;
+
+            color: #1e3a8a;
+
+            margin-bottom: 3px;
+        }
+
+        .start-btn {
+
+            display: block;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 11px;
+
+            border-radius: 7px;
+
+            font-weight: 600;
+        }
+
+        .start-btn:hover {
+
+            background: #1d4ed8;
+        }
+
+        .empty {
+
+            background: white;
+
+            padding: 45px;
+
+            text-align: center;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar h2 {
+                font-size: 16px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <div class="user-area">
+
+            <span class="user-name">
+                {{ user.name }}
+            </span>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-btn"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, {{ user.name }} 👋
+            </h1>
+
+            <p>
+                Choose a published quiz and start your test.
+            </p>
+
+        </div>
+
+
+        <h2 class="section-title">
+            Available Quizzes
+        </h2>
+
+
+        {% if quizzes %}
+
+            <div class="quiz-grid">
+
+                {% for quiz in quizzes %}
+
+                    <div class="quiz-card">
+
+                        <h3>
+                            {{ quiz.title }}
+                        </h3>
+
+
+                        <div class="quiz-description">
+
+                            {% if quiz.description %}
+
+                                {{ quiz.description }}
+
+                            {% else %}
+
+                                No description available.
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="quiz-details">
+
+                            <div class="detail">
+
+                                <strong>
+                                    Duration
+                                </strong>
+
+                                {{ quiz.duration }} minutes
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <strong>
+                                    Total Marks
+                                </strong>
+
+                                {{ quiz.total_marks }}
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <strong>
+                                    Passing Marks
+                                </strong>
+
+                                {{ quiz.passing_marks }}
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <strong>
+                                    Status
+                                </strong>
+
+                                Published
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+    href="{{ url_for(
+        'student.start_quiz',
+        quiz_id=quiz.id
+    ) }}"
+    class="start-btn"
+>
+    Start Quiz
+</a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <h2>
+                    No Quizzes Available
+                </h2>
+
+                <p>
+                    There are currently no published quizzes.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Teacher Dashboard - Online Quiz Management System
+    </title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+        }
+
+        .navbar {
+            background: #2563eb;
+            color: white;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            font-size: 22px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+
+            background: #dc2626;
+
+            padding: 9px 16px;
+
+            border-radius: 6px;
+        }
+
+        .container {
+            padding: 35px;
+        }
+
+        .welcome {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            color: #64748b;
+
+            font-size: 15px;
+
+            margin-bottom: 12px;
+        }
+
+        .card .number {
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+        }
+
+        .quick-actions {
+            margin-top: 30px;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .quick-actions h2 {
+            color: #1e293b;
+
+            margin-bottom: 20px;
+        }
+
+        .actions {
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 12px 20px;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+        }
+
+        .action-btn:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, {{ user.name }} 👋
+            </h1>
+
+            <p>
+                You are logged in as a Teacher.
+            </p>
+
+        </div>
+
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>
+                    My Quizzes
+                </h3>
+
+                <div class="number">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Questions
+                </h3>
+
+                <div class="number">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Students
+                </h3>
+
+                <div class="number">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Results
+                </h3>
+
+                <div class="number">
+                    0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="quick-actions">
+
+            <h2>
+                Quick Actions
+            </h2>
+
+            <div class="actions">
+
+                <a
+                    href="#"
+                    class="action-btn"
+                >
+                    + Create Quiz
+                </a>
+
+                <a
+                    href="#"
+                    class="action-btn"
+                >
+                    Manage Quizzes
+                </a>
+
+                <a
+                    href="#"
+                    class="action-btn"
+                >
+                    View Results
+                </a>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

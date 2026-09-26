@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Quiz Result</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+            color: #172033;
+        }
+
+        .navbar {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            padding: 15px 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+        .logout-btn {
+
+            text-decoration: none;
+
+            color: white;
+
+            background: #dc2626;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            font-weight: 600;
+        }
+
+        .container {
+
+            max-width: 1000px;
+
+            margin: 35px auto;
+
+            padding: 0 20px;
+        }
+
+        .result-card {
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            text-align: center;
+
+            margin-bottom: 25px;
+        }
+
+        .result-card h1 {
+            margin-top: 0;
+        }
+
+        .score {
+
+            font-size: 48px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+
+            margin: 15px 0;
+        }
+
+        .percentage {
+
+            font-size: 20px;
+
+            color: #64748b;
+
+            margin-bottom: 15px;
+        }
+
+        .status {
+
+            display: inline-block;
+
+            padding: 10px 22px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+        }
+
+        .passed {
+
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+        .failed {
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 12px;
+
+            margin-top: 30px;
+        }
+
+        .stat {
+
+            background: #f8fafc;
+
+            padding: 15px;
+
+            border-radius: 8px;
+        }
+
+        .stat strong {
+
+            display: block;
+
+            color: #1e3a8a;
+
+            font-size: 20px;
+
+            margin-bottom: 5px;
+        }
+
+        .stat span {
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+        .review-card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+
+            margin-bottom: 18px;
+        }
+
+        .review-title {
+
+            font-weight: bold;
+
+            font-size: 17px;
+
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+
+            margin-bottom: 15px;
+
+            line-height: 1.5;
+        }
+
+        .answer-row {
+
+            padding: 10px 12px;
+
+            border-radius: 7px;
+
+            margin-bottom: 8px;
+
+            background: #f8fafc;
+        }
+
+        .answer-row strong {
+
+            display: inline-block;
+
+            min-width: 145px;
+        }
+
+        .correct-answer {
+
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+        .wrong-answer {
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        .skipped-answer {
+
+            background: #fef3c7;
+
+            color: #92400e;
+        }
+
+        .marks {
+
+            margin-top: 12px;
+
+            font-weight: bold;
+        }
+
+        .dashboard-btn {
+
+            display: inline-block;
+
+            margin-top: 25px;
+
+            padding: 12px 22px;
+
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            font-weight: 600;
+        }
+
+        @media (max-width: 800px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 550px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .result-card {
+
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- Result Summary -->
+
+        <div class="result-card">
+
+            <h1>
+                {{ quiz.title }}
+            </h1>
+
+            <p>
+                Quiz Completed Successfully
+            </p>
+
+
+            <div class="score">
+
+                {{ score }} / {{ quiz.total_marks }}
+
+            </div>
+
+
+            <div class="percentage">
+
+                Percentage:
+                <strong>
+                    {{ "%.2f"|format(percentage) }}%
+                </strong>
+
+            </div>
+
+
+            {% if score >= quiz.passing_marks %}
+
+                <div class="status passed">
+
+                    ✓ PASSED
+
+                </div>
+
+            {% else %}
+
+                <div class="status failed">
+
+                    ✗ FAILED
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Statistics -->
+
+            <div class="stats">
+
+
+                <div class="stat">
+
+                    <strong>
+                        {{ total_questions }}
+                    </strong>
+
+                    <span>
+                        Total Questions
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        {{ attempted }}
+                    </strong>
+
+                    <span>
+                        Attempted
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        {{ correct }}
+                    </strong>
+
+                    <span>
+                        Correct
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        {{ wrong }}
+                    </strong>
+
+                    <span>
+                        Wrong
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        {{ skipped }}
+                    </strong>
+
+                    <span>
+                        Skipped
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <a
+                href="{{ url_for('student.dashboard') }}"
+                class="dashboard-btn"
+            >
+                Back to Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- Question Review -->
+
+        <h2>
+            Question-wise Review
+        </h2>
+
+
+        {% for answer in answers %}
+
+            <div class="review-card">
+
+
+                <div class="review-title">
+
+                    Question {{ loop.index }}
+
+                </div>
+
+
+                <div class="question-text">
+
+                    {{ answer.question.question_text }}
+
+                </div>
+
+
+                {% if answer.selected_option %}
+
+                    {% if answer.is_correct %}
+
+                        <div class="answer-row correct-answer">
+
+                            <strong>
+                                Your Answer:
+                            </strong>
+
+                            {{ answer.selected_option.option_text }}
+
+                            ✓
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="answer-row wrong-answer">
+
+                            <strong>
+                                Your Answer:
+                            </strong>
+
+                            {{ answer.selected_option.option_text }}
+
+                            ✗
+
+                        </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="answer-row skipped-answer">
+
+                        <strong>
+                            Your Answer:
+                        </strong>
+
+                        Skipped
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if answer.question.options %}
+
+                    {% for option in answer.question.options %}
+
+                        {% if option.is_correct %}
+
+                            <div class="answer-row correct-answer">
+
+                                <strong>
+                                    Correct Answer:
+                                </strong>
+
+                                {{ option.option_text }}
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                <div class="marks">
+
+                    Marks Obtained:
+                    {{ answer.marks_obtained }}
+
+                </div>
+
+
+            </div>
+
+        {% endfor %}
+
+
+    </div>
+
+
+</body>
+
+</html>

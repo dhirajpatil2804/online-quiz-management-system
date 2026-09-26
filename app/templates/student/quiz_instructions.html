@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Quiz Instructions - {{ quiz.title }}
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+            color: #172033;
+        }
+
+        .navbar {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            padding: 15px 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .logout-btn {
+
+            text-decoration: none;
+
+            color: white;
+
+            background: #dc2626;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            font-weight: 600;
+        }
+
+        .container {
+
+            max-width: 850px;
+
+            margin: 45px auto;
+
+            padding: 0 20px;
+        }
+
+        .card {
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .description {
+
+            color: #64748b;
+
+            margin-bottom: 25px;
+
+            line-height: 1.6;
+        }
+
+        .details {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin: 25px 0;
+        }
+
+        .detail {
+
+            background: #f8fafc;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            text-align: center;
+        }
+
+        .detail strong {
+
+            display: block;
+
+            color: #1e3a8a;
+
+            margin-bottom: 5px;
+        }
+
+        .instructions {
+
+            background: #eff6ff;
+
+            border-left: 4px solid #2563eb;
+
+            padding: 20px;
+
+            margin-top: 25px;
+
+            border-radius: 6px;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .start-test {
+
+            display: block;
+
+            width: 100%;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            background: #16a34a;
+
+            color: white;
+
+            padding: 14px;
+
+            border-radius: 7px;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+            margin-top: 30px;
+        }
+
+        .start-test:hover {
+            background: #15803d;
+        }
+
+        @media (max-width: 650px) {
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>
+                {{ quiz.title }}
+            </h1>
+
+
+            <div class="description">
+
+                {{ quiz.description or
+                   "No description available." }}
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <strong>
+                        Duration
+                    </strong>
+
+                    {{ quiz.duration }} minutes
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Total Marks
+                    </strong>
+
+                    {{ quiz.total_marks }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Passing Marks
+                    </strong>
+
+                    {{ quiz.passing_marks }}
+
+                </div>
+
+            </div>
+
+
+            <div class="instructions">
+
+                <h3>
+                    Quiz Instructions
+                </h3>
+
+                <ul>
+
+                    <li>
+                        Read each question carefully.
+                    </li>
+
+                    <li>
+                        Select the answer you believe is correct.
+                    </li>
+
+                    <li>
+                        You can skip a question.
+                    </li>
+
+                    <li>
+                        The quiz has a
+                        <strong>
+                            {{ quiz.duration }} minute
+                        </strong>
+                        duration.
+                    </li>
+
+                    <li>
+                        Once submitted, the quiz cannot be retaken
+                        using the same attempt.
+                    </li>
+
+                    <li>
+                        Your result will be calculated automatically.
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+ <a
+    href="{{ url_for(
+        'student.take_quiz',
+        attempt_id=attempt.id
+    ) }}"
+    class="start-test"
+>
+    Start Test
+</a>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>
