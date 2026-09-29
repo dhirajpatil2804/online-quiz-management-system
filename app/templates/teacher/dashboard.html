@@ -288,30 +288,30 @@
                 Quick Actions
             </h2>
 
-            <div class="actions">
+<div class="actions">
 
-                <a
-                    href="#"
-                    class="action-btn"
-                >
-                    + Create Quiz
-                </a>
+    <a
+        href="{{ url_for('teacher.create_quiz') }}"
+        class="action-btn"
+    >
+        + Create Quiz
+    </a>
 
-                <a
-                    href="#"
-                    class="action-btn"
-                >
-                    Manage Quizzes
-                </a>
+    <a
+        href="{{ url_for('teacher.quizzes') }}"
+        class="action-btn"
+    >
+        Manage Quizzes
+    </a>
 
-                <a
-                    href="#"
-                    class="action-btn"
-                >
-                    View Results
-                </a>
+    <a
+        href="{{ url_for('teacher.results') }}"
+        class="action-btn"
+    >
+        View Results
+    </a>
 
-            </div>
+</div>
 
         </div>
 

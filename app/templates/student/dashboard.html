@@ -16,111 +16,123 @@
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-
-            font-family: Arial, sans-serif;
-
+            font-family: Arial, Helvetica, sans-serif;
             background: #f4f7fb;
-
-            color: #172033;
+            color: #1f2937;
         }
 
-        .navbar {
+        .container {
+            width: 94%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
 
-            background:
-                linear-gradient(
-                    90deg,
-                    #2563eb,
-                    #1d4ed8
-                );
+        /* Header */
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #4f46e5
+            );
 
             color: white;
 
-            padding: 15px 25px;
+            padding: 25px 30px;
+
+            border-radius: 16px;
+
+            margin-bottom: 25px;
 
             display: flex;
 
             justify-content: space-between;
 
             align-items: center;
+
+            box-shadow:
+                0 8px 25px
+                rgba(37, 99, 235, 0.20);
         }
 
-        .navbar h2 {
-            margin: 0;
-
-            font-size: 21px;
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
         }
 
-        .user-area {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
+        .header p {
+            opacity: 0.9;
         }
 
-        .user-name {
-            font-weight: 600;
-        }
-
-        .logout-btn {
+        .logout {
+            background: white;
+            color: #2563eb;
 
             text-decoration: none;
 
-            color: white;
+            padding: 11px 18px;
 
-            background: #dc2626;
+            border-radius: 8px;
 
-            padding: 9px 15px;
+            font-weight: bold;
+        }
 
-            border-radius: 6px;
+        /* Flash */
 
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
         }
 
-        .container {
-
-            max-width: 1100px;
-
-            margin: 35px auto;
-
-            padding: 0 20px;
+        .flash-message.success {
+            background: #dcfce7;
+            color: #166534;
         }
 
-        .welcome {
-
-            margin-bottom: 30px;
+        .flash-message.danger {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
-        .welcome h1 {
-
-            margin: 0 0 8px 0;
-
-            font-size: 30px;
+        .flash-message.info {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
-        .welcome p {
+        /* Section */
 
-            margin: 0;
+        .section {
+            background: white;
 
-            color: #64748b;
+            padding: 25px;
 
-            font-size: 16px;
+            border-radius: 16px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.07);
+
+            margin-bottom: 25px;
         }
 
-        .section-title {
-
+        .section h2 {
             margin-bottom: 20px;
-
-            font-size: 24px;
         }
+
+        /* Quiz cards */
 
         .quiz-grid {
-
             display: grid;
 
             grid-template-columns:
@@ -133,121 +145,183 @@
         }
 
         .quiz-card {
-
-            background: white;
+            border: 1px solid #e5e7eb;
 
             border-radius: 12px;
 
-            padding: 22px;
+            padding: 20px;
 
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.08);
+            background: #ffffff;
         }
 
         .quiz-card h3 {
-
-            margin-top: 0;
-
             margin-bottom: 10px;
-
-            font-size: 20px;
+            color: #1e3a8a;
         }
 
         .quiz-description {
+            color: #6b7280;
 
-            color: #64748b;
+            font-size: 14px;
 
-            min-height: 45px;
+            min-height: 40px;
 
-            line-height: 1.5;
+            margin-bottom: 15px;
         }
 
-        .quiz-details {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
+        .quiz-info {
+            display: flex;
 
             gap: 10px;
 
-            margin: 18px 0;
+            flex-wrap: wrap;
+
+            margin-bottom: 15px;
         }
 
-        .detail {
+        .info {
+            background: #eff6ff;
 
-            background: #f8fafc;
+            color: #1e40af;
 
-            padding: 10px;
+            padding: 6px 10px;
 
-            border-radius: 7px;
+            border-radius: 20px;
 
-            font-size: 14px;
+            font-size: 12px;
+
+            font-weight: bold;
         }
 
-        .detail strong {
+        /* Buttons */
 
-            display: block;
-
-            color: #1e3a8a;
-
-            margin-bottom: 3px;
-        }
-
-        .start-btn {
-
-            display: block;
-
-            text-align: center;
+        .btn {
+            display: inline-block;
 
             text-decoration: none;
 
-            background: #2563eb;
+            border: none;
 
-            color: white;
-
-            padding: 11px;
+            padding: 10px 15px;
 
             border-radius: 7px;
 
-            font-weight: 600;
+            font-weight: bold;
+
+            cursor: pointer;
         }
 
-        .start-btn:hover {
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
 
-            background: #1d4ed8;
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        /* Attempt table */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+        th {
+            background: #eff6ff;
+
+            color: #1e3a8a;
+
+            padding: 13px;
+
+            text-align: left;
+        }
+
+        td {
+            padding: 13px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .score {
+            font-weight: bold;
+        }
+
+        .passed {
+            background: #dcfce7;
+
+            color: #166534;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .failed {
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .retake {
+            background: #fef3c7;
+
+            color: #92400e;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
         }
 
         .empty {
-
-            background: white;
-
-            padding: 45px;
-
             text-align: center;
 
-            border-radius: 12px;
+            padding: 40px;
 
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.07);
-
-            color: #64748b;
+            color: #6b7280;
         }
 
-        @media (max-width: 600px) {
+        @media(max-width: 700px) {
 
-            .navbar h2 {
-                font-size: 16px;
-            }
+            .header {
+                flex-direction: column;
 
-            .user-name {
-                display: none;
-            }
+                align-items: flex-start;
 
-            .welcome h1 {
-                font-size: 25px;
+                gap: 15px;
             }
 
         }
@@ -258,51 +332,66 @@
 
 <body>
 
+<div class="container">
 
-    <div class="navbar">
+    <!-- HEADER -->
 
-        <h2>
-            Online Quiz Management System
-        </h2>
+    <div class="header">
 
-        <div class="user-area">
-
-            <span class="user-name">
-                {{ user.name }}
-            </span>
-
-            <a
-                href="{{ url_for('auth.logout') }}"
-                class="logout-btn"
-            >
-                Logout
-            </a>
-
-        </div>
-
-    </div>
-
-
-    <div class="container">
-
-
-        <div class="welcome">
+        <div>
 
             <h1>
-                Welcome, {{ user.name }} 👋
+                Welcome, {{ current_user.name }} 👋
             </h1>
 
             <p>
-                Choose a published quiz and start your test.
+                Student Dashboard
             </p>
 
         </div>
 
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout"
+        >
+            Logout
+        </a>
 
-        <h2 class="section-title">
-            Available Quizzes
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages(
+        with_categories=true
+    ) %}
+
+        {% if messages %}
+
+            <div class="flash-container">
+
+                {% for category, message in messages %}
+
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- AVAILABLE QUIZZES -->
+
+    <div class="section">
+
+        <h2>
+            📝 Available Quizzes
         </h2>
-
 
         {% if quizzes %}
 
@@ -316,79 +405,100 @@
                             {{ quiz.title }}
                         </h3>
 
+                        <p class="quiz-description">
 
-                        <div class="quiz-description">
+                            {{ quiz.description
+                               or
+                               "No description available."
+                            }}
 
-                            {% if quiz.description %}
+                        </p>
 
-                                {{ quiz.description }}
+                        <div class="quiz-info">
 
-                            {% else %}
+                            <span class="info">
+                                ⏱ {{ quiz.duration }} min
+                            </span>
 
-                                No description available.
+                            <span class="info">
+                                ❓ {{ quiz.number_of_questions }} Questions
+                            </span>
 
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="quiz-details">
-
-                            <div class="detail">
-
-                                <strong>
-                                    Duration
-                                </strong>
-
-                                {{ quiz.duration }} minutes
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <strong>
-                                    Total Marks
-                                </strong>
-
-                                {{ quiz.total_marks }}
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <strong>
-                                    Passing Marks
-                                </strong>
-
-                                {{ quiz.passing_marks }}
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <strong>
-                                    Status
-                                </strong>
-
-                                Published
-
-                            </div>
+                            <span class="info">
+                                🎯 {{ quiz.total_marks }} Marks
+                            </span>
 
                         </div>
 
 
-                        <a
-    href="{{ url_for(
-        'student.start_quiz',
-        quiz_id=quiz.id
-    ) }}"
-    class="start-btn"
->
-    Start Quiz
-</a>
+                        <!-- IN PROGRESS -->
+
+                        {% if quiz.id in in_progress_map %}
+
+                            <a
+                                href="{{
+                                    url_for(
+                                        'student.quiz_instructions',
+                                        attempt_id=in_progress_map[quiz.id].id
+                                    )
+                                }}"
+                                class="btn btn-primary"
+                            >
+                                Continue Quiz
+                            </a>
+
+
+                        <!-- RETAKE AVAILABLE -->
+
+                        {% elif quiz.id in permission_map %}
+
+                            <a
+                                href="{{
+                                    url_for(
+                                        'student.start_quiz',
+                                        quiz_id=quiz.id
+                                    )
+                                }}"
+                                class="btn btn-success"
+                            >
+                                🔄 Retake Quiz
+                            </a>
+
+
+                        <!-- ALREADY ATTEMPTED -->
+
+                        {% elif quiz.id in latest_attempt_map %}
+
+                            <a
+                                href="{{
+                                    url_for(
+                                        'student.quiz_result',
+                                        attempt_id=latest_attempt_map[quiz.id].id
+                                    )
+                                }}"
+                                class="btn btn-secondary"
+                            >
+                                View Result
+                            </a>
+
+
+                        <!-- NEVER ATTEMPTED -->
+
+                        {% else %}
+
+                            <a
+                                href="{{
+                                    url_for(
+                                        'student.start_quiz',
+                                        quiz_id=quiz.id
+                                    )
+                                }}"
+                                class="btn btn-primary"
+                            >
+                                Start Quiz
+                            </a>
+
+                        {% endif %}
 
                     </div>
 
@@ -400,20 +510,194 @@
 
             <div class="empty">
 
-                <h2>
-                    No Quizzes Available
-                </h2>
+                No published quizzes available.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ATTEMPT HISTORY -->
+
+    <div class="section">
+
+        <h2>
+            📊 My Quiz Attempts & Marks
+        </h2>
+
+        {% if attempts %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Quiz</th>
+
+                            <th>Attempt</th>
+
+                            <th>Score</th>
+
+                            <th>Percentage</th>
+
+                            <th>Status</th>
+
+                            <th>Submitted</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for attempt in attempts %}
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+                                <td>
+
+                                    <strong>
+                                        {{ attempt.quiz.title }}
+                                    </strong>
+
+                                </td>
+
+                                <td>
+
+                                    Attempt
+                                    {{ attempt.display_attempt_number }}
+
+                                </td>
+
+                                <td>
+
+                                    <span class="score">
+
+                                        {{ attempt.score }}
+                                        /
+                                        {{ attempt.quiz.total_marks }}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    {% if attempt.quiz.total_marks > 0 %}
+
+                                        {{
+                                            "%.2f"|format(
+                                                (
+                                                    attempt.score
+                                                    /
+                                                    attempt.quiz.total_marks
+                                                ) * 100
+                                            )
+                                        }}%
+
+                                    {% else %}
+
+                                        0%
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if attempt.score >= attempt.quiz.passing_marks %}
+
+                                        <span class="passed">
+                                            PASSED
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="failed">
+                                            FAILED
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if attempt.submitted_at %}
+
+                                        {{
+                                            attempt.submitted_at.strftime(
+                                                "%d-%m-%Y %I:%M %p"
+                                            )
+                                        }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{{
+                                            url_for(
+                                                'student.quiz_result',
+                                                attempt_id=attempt.id
+                                            )
+                                        }}"
+                                        class="btn btn-primary"
+                                    >
+                                        View Result
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <h3>
+                    No quiz attempts yet.
+                </h3>
 
                 <p>
-                    There are currently no published quizzes.
+                    Your completed quiz attempts and marks
+                    will appear here.
                 </p>
 
             </div>
 
         {% endif %}
 
-
     </div>
+
+</div>
 
 </body>
 

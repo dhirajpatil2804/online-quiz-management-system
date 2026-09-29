@@ -2,10 +2,10 @@ from datetime import datetime
 
 from flask import (
     render_template,
+    request,
     redirect,
     url_for,
-    flash,
-    request
+    flash
 )
 
 from flask_login import login_required, current_user
@@ -14,12 +14,17 @@ from app.student import student
 from app.extensions import db
 from app.models import (
     Quiz,
+    Question,
+    Option,
     QuizAttempt,
     QuizAnswer,
-    Question,
-    Option
+    QuizRetakePermission
 )
 
+
+# =========================================================
+# STUDENT DASHBOARD
+# =========================================================
 
 @student.route("/dashboard")
 @login_required
@@ -28,18 +33,97 @@ def dashboard():
     if current_user.role != "student":
         return "Access Denied", 403
 
-    published_quizzes = Quiz.query.filter_by(
+    # All published quizzes
+    quizzes = Quiz.query.filter_by(
         status="published"
     ).order_by(
         Quiz.id.desc()
     ).all()
 
+    # All submitted attempts of this student
+    attempts = QuizAttempt.query.filter_by(
+        student_id=current_user.id,
+        status="submitted"
+    ).order_by(
+        QuizAttempt.submitted_at.desc()
+    ).all()
+
+    # -----------------------------------------------------
+    # Create attempt number for each quiz
+    # -----------------------------------------------------
+
+    attempt_numbers = {}
+
+    for attempt in sorted(
+        attempts,
+        key=lambda x: (
+            x.quiz_id,
+            x.started_at
+        )
+    ):
+
+        if attempt.quiz_id not in attempt_numbers:
+            attempt_numbers[attempt.quiz_id] = 0
+
+        attempt_numbers[attempt.quiz_id] += 1
+
+        attempt.display_attempt_number = (
+            attempt_numbers[attempt.quiz_id]
+        )
+
+    # -----------------------------------------------------
+    # Check in-progress attempts
+    # -----------------------------------------------------
+
+    in_progress_attempts = QuizAttempt.query.filter_by(
+        student_id=current_user.id,
+        status="in_progress"
+    ).all()
+
+    in_progress_map = {
+        attempt.quiz_id: attempt
+        for attempt in in_progress_attempts
+    }
+
+    # -----------------------------------------------------
+    # Check unused retake permissions
+    # -----------------------------------------------------
+
+    permissions = QuizRetakePermission.query.filter_by(
+        student_id=current_user.id,
+        used=False
+    ).all()
+
+    permission_map = {
+        permission.quiz_id: permission
+        for permission in permissions
+    }
+
+    # -----------------------------------------------------
+    # Latest submitted attempt for each quiz
+    # -----------------------------------------------------
+
+    latest_attempt_map = {}
+
+    for attempt in attempts:
+
+        if attempt.quiz_id not in latest_attempt_map:
+
+            latest_attempt_map[attempt.quiz_id] = attempt
+
     return render_template(
         "student/dashboard.html",
-        user=current_user,
-        quizzes=published_quizzes
+        quizzes=quizzes,
+        attempts=attempts,
+        in_progress_map=in_progress_map,
+        permission_map=permission_map,
+        latest_attempt_map=latest_attempt_map
     )
 
+
+# =========================================================
+# START QUIZ
+# =========================================================
 
 @student.route("/quiz/<int:quiz_id>/start")
 @login_required
@@ -54,6 +138,7 @@ def start_quiz(quiz_id):
     ).first()
 
     if not quiz:
+
         flash(
             "Quiz not found or is not published.",
             "danger"
@@ -63,24 +148,99 @@ def start_quiz(quiz_id):
             url_for("student.dashboard")
         )
 
-    existing_attempt = QuizAttempt.query.filter_by(
+    # -----------------------------------------------------
+    # Check if student already has an active attempt
+    # -----------------------------------------------------
+
+    active_attempt = QuizAttempt.query.filter_by(
         student_id=current_user.id,
         quiz_id=quiz.id,
         status="in_progress"
     ).first()
 
-    if existing_attempt:
+    if active_attempt:
 
         return redirect(
             url_for(
                 "student.quiz_instructions",
-                attempt_id=existing_attempt.id
+                attempt_id=active_attempt.id
             )
         )
+
+    # -----------------------------------------------------
+    # Check previous submitted attempt
+    # -----------------------------------------------------
+
+    previous_attempt = QuizAttempt.query.filter_by(
+        student_id=current_user.id,
+        quiz_id=quiz.id,
+        status="submitted"
+    ).order_by(
+        QuizAttempt.submitted_at.desc()
+    ).first()
+
+    # -----------------------------------------------------
+    # If already attempted, check retake permission
+    # -----------------------------------------------------
+
+    if previous_attempt:
+
+        permission = QuizRetakePermission.query.filter_by(
+            student_id=current_user.id,
+            quiz_id=quiz.id,
+            used=False
+        ).order_by(
+            QuizRetakePermission.created_at.desc()
+        ).first()
+
+        if not permission:
+
+            flash(
+                "You have already completed this quiz. "
+                "A teacher must grant a retake permission.",
+                "info"
+            )
+
+            return redirect(
+                url_for(
+                    "student.quiz_result",
+                    attempt_id=previous_attempt.id
+                )
+            )
+
+        # -------------------------------------------------
+        # Create retake attempt
+        # -------------------------------------------------
+
+        new_attempt = QuizAttempt(
+            student_id=current_user.id,
+            quiz_id=quiz.id,
+            started_at=datetime.utcnow(),
+            status="in_progress"
+        )
+
+        db.session.add(new_attempt)
+
+        # Mark permission as used
+        permission.used = True
+
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "student.quiz_instructions",
+                attempt_id=new_attempt.id
+            )
+        )
+
+    # -----------------------------------------------------
+    # First attempt
+    # -----------------------------------------------------
 
     attempt = QuizAttempt(
         student_id=current_user.id,
         quiz_id=quiz.id,
+        started_at=datetime.utcnow(),
         status="in_progress"
     )
 
@@ -95,7 +255,13 @@ def start_quiz(quiz_id):
     )
 
 
-@student.route("/quiz/<int:attempt_id>/instructions")
+# =========================================================
+# QUIZ INSTRUCTIONS
+# =========================================================
+
+@student.route(
+    "/quiz/<int:attempt_id>/instructions"
+)
 @login_required
 def quiz_instructions(attempt_id):
 
@@ -110,27 +276,24 @@ def quiz_instructions(attempt_id):
     if not attempt:
         return "Quiz attempt not found.", 404
 
-    if attempt.status != "in_progress":
-        flash(
-            "This quiz attempt is no longer active.",
-            "danger"
-        )
+    quiz = Quiz.query.get(attempt.quiz_id)
 
-        return redirect(
-            url_for("student.dashboard")
-        )
-
-    quiz = attempt.quiz
+    if not quiz:
+        return "Quiz not found.", 404
 
     return render_template(
         "student/quiz_instructions.html",
-        attempt=attempt,
-        quiz=quiz
+        quiz=quiz,
+        attempt=attempt
     )
 
 
+# =========================================================
+# TAKE QUIZ
+# =========================================================
+
 @student.route(
-    "/quiz/<int:attempt_id>/test",
+    "/quiz/<int:attempt_id>/take",
     methods=["GET", "POST"]
 )
 @login_required
@@ -147,17 +310,27 @@ def take_quiz(attempt_id):
     if not attempt:
         return "Quiz attempt not found.", 404
 
-    if attempt.status != "in_progress":
-        flash(
-            "This quiz attempt is no longer active.",
-            "danger"
-        )
+    quiz = Quiz.query.get(attempt.quiz_id)
+
+    if not quiz:
+        return "Quiz not found.", 404
+
+    # -----------------------------------------------------
+    # Already submitted
+    # -----------------------------------------------------
+
+    if attempt.status == "submitted":
 
         return redirect(
-            url_for("student.dashboard")
+            url_for(
+                "student.quiz_result",
+                attempt_id=attempt.id
+            )
         )
 
-    quiz = attempt.quiz
+    # -----------------------------------------------------
+    # Questions
+    # -----------------------------------------------------
 
     questions = Question.query.filter_by(
         quiz_id=quiz.id
@@ -165,137 +338,115 @@ def take_quiz(attempt_id):
         Question.question_order.asc()
     ).all()
 
-    if not questions:
-        flash(
-            "This quiz has no questions.",
-            "danger"
-        )
+    # -----------------------------------------------------
+    # Server-side timer
+    # -----------------------------------------------------
 
-        return redirect(
-            url_for("student.dashboard")
-        )
+    elapsed_seconds = (
+        datetime.utcnow() - attempt.started_at
+    ).total_seconds()
 
-    # -----------------------------
-    # SUBMIT QUIZ
-    # -----------------------------
+    total_seconds = quiz.duration * 60
+
+    remaining_seconds = max(
+        0,
+        int(total_seconds - elapsed_seconds)
+    )
+
+    # -----------------------------------------------------
+    # Submit quiz
+    # -----------------------------------------------------
 
     if request.method == "POST":
 
-        now = datetime.utcnow()
+        # Prevent duplicate submission
+        if attempt.status == "submitted":
 
+            return redirect(
+                url_for(
+                    "student.quiz_result",
+                    attempt_id=attempt.id
+                )
+            )
+
+        # Check time
         elapsed_seconds = (
-            now - attempt.started_at
+            datetime.utcnow() - attempt.started_at
         ).total_seconds()
 
-        quiz_duration_seconds = (
-            quiz.duration * 60
-        )
-
-        # Allow a small 5-second server tolerance
-        if elapsed_seconds > quiz_duration_seconds + 5:
-
-            flash(
-                "The quiz time has expired. Your submitted answers will be evaluated.",
-                "danger"
-            )
+        # -------------------------------------------------
+        # Evaluate answers
+        # -------------------------------------------------
 
         total_score = 0
 
         for question in questions:
 
-            field_name = (
-                f"question_{question.id}"
-            )
-
             selected_option_id = request.form.get(
-                field_name
+                f"question_{question.id}"
             )
 
             selected_option = None
 
             if selected_option_id:
 
-                try:
-
-                    selected_option_id = int(
-                        selected_option_id
-                    )
-
-                except ValueError:
-
-                    selected_option_id = None
-
-            if selected_option_id:
-
                 selected_option = Option.query.filter_by(
-                    id=selected_option_id,
+                    id=int(selected_option_id),
                     question_id=question.id
                 ).first()
 
-            # Default: skipped question
             is_correct = False
             marks_obtained = 0
 
-            # If an option was selected
             if selected_option:
 
                 if selected_option.is_correct:
 
                     is_correct = True
-
                     marks_obtained = question.marks
 
                 else:
 
-                    marks_obtained = (
-                        -question.negative_marks
-                    )
+                    marks_obtained = -question.negative_marks
 
-            total_score += marks_obtained
-
-            # Check whether this answer already exists
-            existing_answer = QuizAnswer.query.filter_by(
+            # Save answer
+            answer = QuizAnswer(
                 attempt_id=attempt.id,
-                question_id=question.id
-            ).first()
-
-            if existing_answer:
-
-                existing_answer.selected_option_id = (
+                question_id=question.id,
+                selected_option_id=(
                     selected_option.id
                     if selected_option
                     else None
-                )
+                ),
+                is_correct=is_correct,
+                marks_obtained=marks_obtained
+            )
 
-                existing_answer.is_correct = is_correct
+            db.session.add(answer)
 
-                existing_answer.marks_obtained = (
-                    marks_obtained
-                )
+            total_score += marks_obtained
 
-            else:
+        # -------------------------------------------------
+        # Prevent negative final score
+        # -------------------------------------------------
 
-                answer = QuizAnswer(
-                    attempt_id=attempt.id,
-                    question_id=question.id,
-                    selected_option_id=(
-                        selected_option.id
-                        if selected_option
-                        else None
-                    ),
-                    is_correct=is_correct,
-                    marks_obtained=marks_obtained
-                )
+        if total_score < 0:
+            total_score = 0
 
-                db.session.add(answer)
+        # -------------------------------------------------
+        # Submit attempt
+        # -------------------------------------------------
 
         attempt.score = total_score
-
-        attempt.submitted_at = now
-
+        attempt.submitted_at = datetime.utcnow()
         attempt.status = "submitted"
 
         db.session.commit()
+
+        flash(
+            "Quiz submitted successfully.",
+            "success"
+        )
 
         return redirect(
             url_for(
@@ -306,125 +457,127 @@ def take_quiz(attempt_id):
 
     return render_template(
         "student/take_quiz.html",
-        attempt=attempt,
         quiz=quiz,
-        questions=questions
+        questions=questions,
+        attempt=attempt,
+        remaining_seconds=remaining_seconds
     )
 
 
-@student.route("/quiz/<int:attempt_id>/result")
+# =========================================================
+# QUIZ RESULT
+# =========================================================
+
+@student.route(
+    "/quiz/result/<int:attempt_id>"
+)
 @login_required
 def quiz_result(attempt_id):
 
     if current_user.role != "student":
         return "Access Denied", 403
 
+    # -----------------------------------------------------
+    # Find exact attempt
+    # -----------------------------------------------------
+
     attempt = QuizAttempt.query.filter_by(
         id=attempt_id,
-        student_id=current_user.id
+        student_id=current_user.id,
+        status="submitted"
     ).first()
 
     if not attempt:
-        return "Quiz attempt not found.", 404
+        return "Result not found.", 404
 
-    if attempt.status != "submitted":
+    quiz = Quiz.query.get(attempt.quiz_id)
 
-        return redirect(
-            url_for(
-                "student.take_quiz",
-                attempt_id=attempt.id
-            )
-        )
+    if not quiz:
+        return "Quiz not found.", 404
 
-    quiz = attempt.quiz
+    # -----------------------------------------------------
+    # Answers for this exact attempt
+    # -----------------------------------------------------
 
     answers = QuizAnswer.query.filter_by(
         attempt_id=attempt.id
-    ).order_by(
-        QuizAnswer.question_id.asc()
     ).all()
 
-    total_questions = len(answers)
-
-    attempted = sum(
-        1
-        for answer in answers
-        if answer.selected_option_id is not None
+    total_questions = len(
+        Question.query.filter_by(
+            quiz_id=quiz.id
+        ).all()
     )
 
-    skipped = total_questions - attempted
-
-    correct = sum(
+    correct_answers = sum(
         1
         for answer in answers
         if answer.is_correct
     )
 
-    wrong = attempted - correct
+    wrong_answers = sum(
+        1
+        for answer in answers
+        if answer.selected_option_id
+        and not answer.is_correct
+    )
 
-    score = attempt.score or 0
+    unanswered = (
+        total_questions
+        - len(answers)
+    )
 
     if quiz.total_marks > 0:
 
         percentage = (
-            score / quiz.total_marks
+            attempt.score
+            / quiz.total_marks
         ) * 100
 
     else:
 
         percentage = 0
 
-    return render_template(
-        "student/quiz_result.html",
-        attempt=attempt,
-        quiz=quiz,
-        answers=answers,
-        score=score,
-        total_questions=total_questions,
-        attempted=attempted,
-        correct=correct,
-        wrong=wrong,
-        skipped=skipped,
-        percentage=percentage
+    passed = (
+        attempt.score >= quiz.passing_marks
     )
 
-    if current_user.role != "student":
-        return "Access Denied", 403
+    # -----------------------------------------------------
+    # Attempt number
+    # -----------------------------------------------------
 
-    attempt = QuizAttempt.query.filter_by(
-        id=attempt_id,
-        student_id=current_user.id
-    ).first()
+    previous_attempts = QuizAttempt.query.filter(
+        QuizAttempt.student_id == current_user.id,
+        QuizAttempt.quiz_id == quiz.id,
+        QuizAttempt.status == "submitted",
+        QuizAttempt.id <= attempt.id
+    ).count()
 
-    if not attempt:
-        return "Quiz attempt not found.", 404
+    attempt_number = previous_attempts
 
-    if attempt.status != "submitted":
+    # -----------------------------------------------------
+    # All attempts for this quiz
+    # -----------------------------------------------------
 
-        return redirect(
-            url_for(
-                "student.take_quiz",
-                attempt_id=attempt.id
-            )
-        )
-
-    quiz = attempt.quiz
-
-    score = attempt.score or 0
-
-    passed = score >= quiz.passing_marks
-
-    answers = QuizAnswer.query.filter_by(
-        attempt_id=attempt.id
+    all_attempts = QuizAttempt.query.filter_by(
+        student_id=current_user.id,
+        quiz_id=quiz.id,
+        status="submitted"
     ).order_by(
-        QuizAnswer.question_id.asc()
+        QuizAttempt.submitted_at.asc()
     ).all()
 
     return render_template(
         "student/quiz_result.html",
-        attempt=attempt,
         quiz=quiz,
-        score=score,
+        attempt=attempt,
+        answers=answers,
+        total_questions=total_questions,
+        correct_answers=correct_answers,
+        wrong_answers=wrong_answers,
+        unanswered=unanswered,
+        percentage=percentage,
         passed=passed,
-        answers=answers
+        attempt_number=attempt_number,
+        all_attempts=all_attempts
     )

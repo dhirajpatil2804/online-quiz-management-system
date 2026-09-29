@@ -304,62 +304,61 @@
     </div>
 
 
-    <script>
+<script>
 
-        let durationMinutes = {{ quiz.duration }};
+    let totalSeconds = {{ remaining_seconds }};
 
-        let totalSeconds = durationMinutes * 60;
+    const timerElement =
+        document.getElementById("timer");
 
-        const timerElement =
-            document.getElementById("timer");
-
-
-        function updateTimer() {
-
-            let minutes =
-                Math.floor(totalSeconds / 60);
-
-            let seconds =
-                totalSeconds % 60;
+    const quizForm =
+        document.getElementById("quizForm");
 
 
-            timerElement.textContent =
-                String(minutes).padStart(2, "0")
-                + ":"
-                + String(seconds).padStart(2, "0");
+    function updateTimer() {
+
+        let minutes =
+            Math.floor(totalSeconds / 60);
+
+        let seconds =
+            totalSeconds % 60;
 
 
-            if (totalSeconds <= 0) {
-
-                clearInterval(timer);
-
-                alert(
-                    "Time is over. The quiz will be submitted."
-                );
-
-                document
-                    .getElementById("quizForm")
-                    .submit();
-
-                return;
-            }
+        timerElement.textContent =
+            String(minutes).padStart(2, "0")
+            + ":"
+            + String(seconds).padStart(2, "0");
 
 
-            totalSeconds--;
+        if (totalSeconds <= 0) {
 
+            clearInterval(timer);
+
+            alert(
+                "Time is over. Your quiz will be submitted automatically."
+            );
+
+            quizForm.submit();
+
+            return;
         }
 
 
-        updateTimer();
+        totalSeconds--;
+
+    }
 
 
-        const timer =
-            setInterval(
-                updateTimer,
-                1000
-            );
+    updateTimer();
 
-    </script>
+
+    const timer =
+        setInterval(
+            updateTimer,
+            1000
+        );
+
+</script>
 
 
 </body>

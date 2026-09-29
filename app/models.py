@@ -62,10 +62,7 @@ class User(UserMixin, db.Model):
 class Quiz(db.Model):
     __tablename__ = "quizzes"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
     title = db.Column(
         db.String(200),
@@ -80,6 +77,12 @@ class Quiz(db.Model):
     duration = db.Column(
         db.Integer,
         nullable=False
+    )
+
+    number_of_questions = db.Column(
+        db.Integer,
+        nullable=False,
+        default=10
     )
 
     total_marks = db.Column(
@@ -118,6 +121,7 @@ class Quiz(db.Model):
 
     def __repr__(self):
         return f"<Quiz {self.title}>"
+
 
 class Question(db.Model):
     __tablename__ = "questions"
@@ -329,3 +333,62 @@ class QuizAnswer(db.Model):
 
     def __repr__(self):
         return f"<QuizAnswer {self.id}>"
+
+
+class QuizRetakePermission(db.Model):
+    __tablename__ = "quiz_retake_permissions"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    quiz_id = db.Column(
+        db.Integer,
+        db.ForeignKey("quizzes.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    teacher_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    reason = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    used = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    student = db.relationship(
+        "User",
+        foreign_keys=[student_id]
+    )
+
+    quiz = db.relationship(
+        "Quiz",
+        foreign_keys=[quiz_id]
+    )
+
+    teacher = db.relationship(
+        "User",
+        foreign_keys=[teacher_id]
+    )
+
+    def __repr__(self):
+        return f"<QuizRetakePermission student={self.student_id} quiz={self.quiz_id}>"
