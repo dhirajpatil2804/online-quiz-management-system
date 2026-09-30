@@ -217,6 +217,10 @@
             background: #7c3aed;
         }
 
+        .orange-btn {
+            background: #ea580c;
+        }
+
         .btn:hover {
             opacity: 0.9;
         }
@@ -272,6 +276,8 @@
 
     <div class="container">
 
+
+        <!-- Welcome -->
 
         <div class="welcome">
 
@@ -356,7 +362,7 @@
         <div class="actions">
 
 
-            <!-- Users -->
+            <!-- USER MANAGEMENT -->
 
             <div class="action-card">
 
@@ -389,7 +395,70 @@
             </div>
 
 
-            <!-- Quizzes -->
+            <!-- TEACHER MANAGEMENT -->
+
+            <div class="action-card">
+
+                <h3>
+                    👨‍🏫 Teacher Management
+                </h3>
+
+                <p>
+                    Add, edit, activate, deactivate and manage teacher accounts.
+                </p>
+
+                <div class="action-buttons">
+
+                    <a
+                        href="{{ url_for('admin.teachers') }}"
+                        class="btn orange-btn"
+                    >
+                        Manage Teachers
+                    </a>
+
+                    <a
+                        href="{{ url_for('admin.add_teacher') }}"
+                        class="btn green-btn"
+                    >
+                        + Add Teacher
+                    </a>
+
+                </div>
+
+            </div>
+<!-- STUDENT MANAGEMENT -->
+
+<div class="action-card">
+
+    <h3>
+        👨‍🎓 Student Management
+    </h3>
+
+    <p>
+        Add, edit, activate, deactivate and manage student accounts.
+    </p>
+
+    <div class="action-buttons">
+
+        <a
+            href="{{ url_for('admin.students') }}"
+            class="btn blue-btn"
+        >
+            Manage Students
+        </a>
+
+        <a
+            href="{{ url_for('admin.add_student') }}"
+            class="btn green-btn"
+        >
+            + Add Student
+        </a>
+
+    </div>
+
+</div>
+
+            <!-- QUIZ MANAGEMENT -->
 
             <div class="action-card">
 
@@ -415,31 +484,59 @@
             </div>
 
 
-            <!-- Reports -->
+            <!-- REPORTS -->
 
-            <div class="action-card">
+<!-- REPORTS -->
 
-                <h3>
-                    📊 Reports
-                </h3>
+<div class="action-card">
 
-                <p>
-                    View quiz and student performance reports.
-                </p>
+    <h3>
+        📊 Reports
+    </h3>
 
-                <div class="action-buttons">
+    <p>
+        View quiz and student performance reports.
+    </p>
 
-                    <a
-                        href="#"
-                        class="btn blue-btn"
-                    >
-                        Reports
-                    </a>
+    <div class="action-buttons">
 
-                </div>
+        <a
+            href="{{ url_for('admin.reports') }}"
+            class="btn blue-btn"
+        >
+            Reports
+        </a>
 
-            </div>
+    </div>
 
+</div>
+
+
+<!-- ANALYTICS DASHBOARD -->
+
+<div class="action-card">
+
+    <h3>
+        📈 Analytics Dashboard
+    </h3>
+
+    <p>
+        View quiz performance, pass/fail statistics,
+        student activity and system analytics.
+    </p>
+
+    <div class="action-buttons">
+
+        <a
+            href="{{ url_for('admin.analytics') }}"
+            class="btn purple-btn"
+        >
+            📊 Analytics Dashboard
+        </a>
+
+    </div>
+
+</div>
 
         </div>
 

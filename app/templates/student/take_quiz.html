@@ -97,6 +97,48 @@
 
             color: #64748b;
         }
+        .progress-section {
+    margin-top: 18px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+    color: #475569;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+
+    background: #e2e8f0;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+
+    width: 0%;
+
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
 
         .question-card {
             background: white;
@@ -224,7 +266,30 @@
                 &nbsp; | &nbsp;
                 Questions: {{ questions|length }}
             </p>
+<div class="progress-section">
 
+    <div class="progress-info">
+
+        <span id="progressText">
+            Question 0 of {{ questions|length }}
+        </span>
+
+        <span id="progressPercent">
+            0%
+        </span>
+
+    </div>
+
+    <div class="progress-bar">
+
+        <div
+            class="progress-fill"
+            id="progressFill"
+        ></div>
+
+    </div>
+
+</div>
         </div>
 
 
@@ -306,13 +371,81 @@
 
 <script>
 
-    let totalSeconds = {{ remaining_seconds }};
+    /* =========================================
+       QUESTION PROGRESS
+    ========================================= */
+
+    const totalQuestions = {{ questions|length }};
+
+    const progressText =
+        document.getElementById("progressText");
+
+    const progressPercent =
+        document.getElementById("progressPercent");
+
+    const progressFill =
+        document.getElementById("progressFill");
+
+
+    function updateProgress() {
+
+        const answeredQuestions =
+            document.querySelectorAll(
+                'input[type="radio"]:checked'
+            ).length;
+
+        const percentage =
+            totalQuestions > 0
+                ? Math.round(
+                    (answeredQuestions / totalQuestions) * 100
+                )
+                : 0;
+
+        progressText.textContent =
+            "Answered "
+            + answeredQuestions
+            + " of "
+            + totalQuestions;
+
+        progressPercent.textContent =
+            percentage + "%";
+
+        progressFill.style.width =
+            percentage + "%";
+    }
+
+
+    document
+        .querySelectorAll(
+            'input[type="radio"]'
+        )
+        .forEach(function(input) {
+
+            input.addEventListener(
+                "change",
+                updateProgress
+            );
+
+        });
+
+
+    updateProgress();
+
+
+    /* =========================================
+       QUIZ TIMER
+    ========================================= */
+
+    let totalSeconds =
+        {{ remaining_seconds }};
 
     const timerElement =
         document.getElementById("timer");
 
     const quizForm =
         document.getElementById("quizForm");
+
+    let timer = null;
 
 
     function updateTimer() {
@@ -330,9 +463,13 @@
             + String(seconds).padStart(2, "0");
 
 
+        /* Time finished */
+
         if (totalSeconds <= 0) {
 
-            clearInterval(timer);
+            if (timer) {
+                clearInterval(timer);
+            }
 
             alert(
                 "Time is over. Your quiz will be submitted automatically."
@@ -349,17 +486,17 @@
     }
 
 
+    /* Start timer immediately */
+
     updateTimer();
 
 
-    const timer =
-        setInterval(
-            updateTimer,
-            1000
-        );
+    timer = setInterval(
+        updateTimer,
+        1000
+    );
 
 </script>
-
 
 </body>
 

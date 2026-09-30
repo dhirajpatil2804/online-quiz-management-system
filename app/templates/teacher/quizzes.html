@@ -11,7 +11,7 @@
     >
 
     <title>
-        My Quizzes - Online Quiz Management System
+        Manage Quizzes - Online Quiz Management System
     </title>
 
     <style>
@@ -25,11 +25,17 @@
 
         body {
             background: #f4f7fb;
+            color: #1e293b;
         }
+
+        /* =========================
+           NAVBAR
+        ========================== */
 
         .navbar {
             background: #2563eb;
             color: white;
+
             padding: 18px 30px;
 
             display: flex;
@@ -51,24 +57,49 @@
             text-decoration: none;
 
             padding: 9px 15px;
+
             border-radius: 6px;
+
+            font-weight: bold;
         }
 
         .dashboard-btn {
             background: #1d4ed8;
         }
 
+        .dashboard-btn:hover {
+            background: #1e40af;
+        }
+
         .logout {
             background: #dc2626;
         }
 
-        .container {
-            padding: 35px;
+        .logout:hover {
+            background: #b91c1c;
         }
+
+        /* =========================
+           CONTAINER
+        ========================== */
+
+        .container {
+            max-width: 1450px;
+
+            margin: auto;
+
+            padding: 30px;
+        }
+
+        /* =========================
+           HEADER
+        ========================== */
 
         .header {
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
 
             margin-bottom: 25px;
@@ -76,31 +107,205 @@
 
         .header h1 {
             color: #1e293b;
+
+            font-size: 30px;
+        }
+
+        .header p {
+            color: #64748b;
+
+            margin-top: 6px;
         }
 
         .create-btn {
             background: #16a34a;
+
             color: white;
 
             text-decoration: none;
 
-            padding: 11px 18px;
+            padding: 12px 18px;
 
             border-radius: 7px;
 
             font-weight: bold;
+
+            white-space: nowrap;
         }
 
+        .create-btn:hover {
+            background: #15803d;
+        }
+
+        /* =========================
+           FLASH MESSAGE
+        ========================== */
+
         .message {
-            padding: 12px 15px;
+            padding: 13px 16px;
 
             margin-bottom: 20px;
 
-            border-radius: 7px;
+            border-radius: 8px;
 
             background: #dcfce7;
+
             color: #166534;
+
+            border: 1px solid #bbf7d0;
         }
+
+        /* =========================
+           SUMMARY CARDS
+        ========================== */
+
+        .summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .summary-icon {
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 24px;
+
+            background: #eff6ff;
+        }
+
+        .summary-info h3 {
+            font-size: 14px;
+
+            color: #64748b;
+
+            margin-bottom: 5px;
+        }
+
+        .summary-number {
+            font-size: 26px;
+
+            font-weight: bold;
+
+            color: #1e293b;
+        }
+
+        .published-icon {
+            background: #dcfce7;
+        }
+
+        .draft-icon {
+            background: #fef3c7;
+        }
+
+        /* =========================
+           TOOLBAR
+        ========================== */
+
+        .toolbar {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+
+            display: flex;
+
+            gap: 15px;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+
+            min-width: 250px;
+
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 14px;
+
+            min-width: 160px;
+
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: #2563eb;
+        }
+
+        /* =========================
+           QUIZ GRID
+        ========================== */
 
         .quiz-grid {
             display: grid;
@@ -114,19 +319,86 @@
         .quiz-card {
             background: white;
 
-            padding: 25px;
+            padding: 24px;
 
-            border-radius: 12px;
+            border-radius: 14px;
 
             box-shadow:
                 0 4px 15px rgba(0, 0, 0, 0.08);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-4px);
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .quiz-title-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
         }
 
         .quiz-card h2 {
             color: #1e293b;
 
-            margin-bottom: 10px;
+            font-size: 20px;
+
+            line-height: 1.3;
         }
+
+        /* =========================
+           STATUS
+        ========================== */
+
+        .status {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+        .draft {
+            background: #fef3c7;
+
+            color: #92400e;
+        }
+
+        .published {
+            background: #dcfce7;
+
+            color: #166534;
+        }
+        .locked {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+        /* =========================
+           DESCRIPTION
+        ========================== */
 
         .description {
             color: #64748b;
@@ -135,8 +407,14 @@
 
             min-height: 45px;
 
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+
+            font-size: 14px;
         }
+
+        /* =========================
+           DETAILS
+        ========================== */
 
         .details {
             display: grid;
@@ -146,15 +424,17 @@
 
             gap: 10px;
 
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .detail {
             background: #f8fafc;
 
-            padding: 10px;
+            padding: 11px;
 
-            border-radius: 6px;
+            border-radius: 7px;
+
+            border: 1px solid #f1f5f9;
         }
 
         .detail small {
@@ -162,48 +442,89 @@
 
             color: #64748b;
 
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
         }
 
         .detail strong {
             color: #1e293b;
+
+            font-size: 14px;
         }
 
-        .status {
-            display: inline-block;
+        /* =========================
+           ACTIONS
+        ========================== */
 
-            padding: 5px 10px;
+        .quiz-actions {
+            display: grid;
 
-            border-radius: 20px;
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 9px;
+
+            margin-top: auto;
+        }
+
+        .quiz-action {
+            text-align: center;
+
+            text-decoration: none;
+
+            padding: 10px 8px;
+
+            border-radius: 7px;
 
             font-size: 13px;
 
             font-weight: bold;
 
-            margin-bottom: 15px;
+            color: white;
+
+            transition: opacity 0.2s ease;
         }
 
-        .draft {
-            background: #fef3c7;
-            color: #92400e;
+        .quiz-action:hover {
+            opacity: 0.88;
         }
 
-        .published {
-            background: #dcfce7;
-            color: #166534;
+        .edit-btn {
+            background: #2563eb;
         }
+
+        .questions-btn {
+            background: #7c3aed;
+        }
+
+        .results-btn {
+            background: #0891b2;
+        }
+
+        /* =========================
+           EMPTY
+        ========================== */
 
         .empty {
             background: white;
 
-            padding: 50px;
+            padding: 60px 30px;
 
             text-align: center;
 
-            border-radius: 12px;
+            border-radius: 14px;
 
             box-shadow:
                 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-icon {
+            font-size: 55px;
+
+            margin-bottom: 15px;
         }
 
         .empty h2 {
@@ -215,10 +536,35 @@
         .empty p {
             color: #64748b;
 
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        @media (max-width: 1000px) {
+        /* =========================
+           NO SEARCH RESULTS
+        ========================== */
+
+        .no-search-results {
+            display: none;
+
+            background: white;
+
+            padding: 45px;
+
+            text-align: center;
+
+            border-radius: 12px;
+
+            color: #64748b;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 1100px) {
 
             .quiz-grid {
                 grid-template-columns:
@@ -227,33 +573,313 @@
 
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 800px) {
 
-            .container {
-                padding: 20px;
+            .summary {
+                grid-template-columns:
+                    1fr;
             }
 
             .header {
-                flex-direction: column;
-
                 align-items: flex-start;
 
+                flex-direction: column;
+
                 gap: 15px;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .navbar h2 {
+                font-size: 17px;
+            }
+
+            .nav-links a {
+                padding: 8px 10px;
+
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 18px;
             }
 
             .quiz-grid {
                 grid-template-columns: 1fr;
             }
 
+            .toolbar {
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .quiz-title-row {
+                flex-direction: column;
+            }
+
         }
 
-    </style>
+        /* =========================
+   PERFORMANCE BOX
+========================= */
+
+.performance-box {
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 9px;
+
+    padding: 14px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.performance-title {
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    color: #334155;
+
+    margin-bottom: 12px;
+
+}
+
+
+.performance-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 8px;
+
+}
+
+
+.performance-item {
+
+    background: white;
+
+    padding: 9px;
+
+    border-radius: 6px;
+
+    border: 1px solid #e5e7eb;
+
+}
+
+
+.performance-item span {
+
+    display: block;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+
+}
+
+
+.performance-item strong {
+
+    color: #1e293b;
+
+    font-size: 15px;
+
+}
+
+
+.pass-fail-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-top: 10px;
+
+}
+
+
+.pass-stat {
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    padding: 6px 9px;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+
+}
+
+
+.fail-stat {
+
+    background: #fee2e2;
+
+    color: #991b1b;
+
+    padding: 6px 9px;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+
+}
+
+
+.last-attempt {
+
+    margin-top: 10px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #e2e8f0;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+}
+
+
+.last-attempt strong {
+
+    color: #334155;
+
+}
+
+
+.no-attempt {
+
+    color: #94a3b8;
+
+}
+.publish-btn {
+
+    width: 100%;
+
+    border: none;
+
+    background: #16a34a;
+
+    cursor: pointer;
+
+    font-family: Arial, sans-serif;
+}
+
+.publish-btn:hover {
+
+    background: #15803d;
+
+}
+
+
+.unpublish-btn {
+
+    width: 100%;
+
+    border: none;
+
+    background: #ea580c;
+
+    cursor: pointer;
+
+    font-family: Arial, sans-serif;
+}
+
+.unpublish-btn:hover {
+
+    background: #c2410c;
+
+}
+
+.duplicate-btn {
+    background: #6f42c1;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.duplicate-btn:hover {
+    background: #59339d;
+}
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.delete-btn:hover {
+    background: #b02a37;
+}
+
+.locked-action {
+    background: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.delete-action {
+    width: 100%;
+    border: none;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+}
+
+.delete-action:hover {
+    background: #b02a37;
+}
+
+</style>
 
 </head>
 
 
 <body>
 
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
 
     <div class="navbar">
 
@@ -285,11 +911,24 @@
     <div class="container">
 
 
+        <!-- =========================
+             HEADER
+        ========================== -->
+
         <div class="header">
 
-            <h1>
-                My Quizzes
-            </h1>
+            <div>
+
+                <h1>
+                    📚 My Quizzes
+                </h1>
+
+                <p>
+                    Create, manage and monitor your quizzes.
+                </p>
+
+            </div>
+
 
             <a
                 href="{{ url_for('teacher.create_quiz') }}"
@@ -300,6 +939,10 @@
 
         </div>
 
+
+        <!-- =========================
+             FLASH MESSAGES
+        ========================== -->
 
         {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -318,22 +961,179 @@
         {% endwith %}
 
 
+        <!-- =========================
+             SUMMARY
+        ========================== -->
+
         {% if quizzes %}
 
+            <div class="summary">
 
-            <div class="quiz-grid">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon">
+                        📚
+                    </div>
+
+                    <div class="summary-info">
+
+                        <h3>
+                            Total Quizzes
+                        </h3>
+
+                        <div class="summary-number">
+                            {{ quizzes|length }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon published-icon">
+                        🟢
+                    </div>
+
+                    <div class="summary-info">
+
+                        <h3>
+                            Published
+                        </h3>
+
+                        <div
+                            class="summary-number"
+                            id="publishedCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon draft-icon">
+                        🟡
+                    </div>
+
+                    <div class="summary-info">
+
+                        <h3>
+                            Draft
+                        </h3>
+
+                        <div
+                            class="summary-number"
+                            id="draftCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =========================
+                 SEARCH / FILTER
+            ========================== -->
+
+            <div class="toolbar">
+
+                <div class="search-box">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Search quiz by title or description..."
+                    >
+
+                </div>
+
+
+                <select
+                    id="statusFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Quizzes
+                    </option>
+
+                    <option value="published">
+                        🟢 Published
+                    </option>
+
+                    <option value="draft">
+                        🟡 Draft
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 QUIZ GRID
+            ========================== -->
+
+            <div
+                class="quiz-grid"
+                id="quizGrid"
+            >
 
 
                 {% for quiz in quizzes %}
 
+                    <div
+                        class="quiz-card"
+                        data-title="{{ quiz.title|lower }}"
+                        data-description="{{ (quiz.description or '')|lower }}"
+                        data-status="{{ quiz.status }}"
+                    >
 
-                    <div class="quiz-card">
+
+                        <!-- TITLE -->
+
+                        <div class="quiz-title-row">
+
+                            <h2>
+                                {{ quiz.title }}
+                            </h2>
 
 
-                        <h2>
-                            {{ quiz.title }}
-                        </h2>
+                            {% if quiz.total_attempts > 0 %}
 
+    <span class="status locked">
+        🔴 Locked
+    </span>
+
+{% elif quiz.status == "published" %}
+
+    <span class="status published">
+        🟢 Published
+    </span>
+
+{% else %}
+
+    <span class="status draft">
+        🟡 Draft
+    </span>
+
+{% endif %}
+
+                        </div>
+
+
+                        <!-- DESCRIPTION -->
 
                         <p class="description">
 
@@ -350,112 +1150,370 @@
                         </p>
 
 
-                        {% if quiz.status == "published" %}
+                        <!-- DETAILS -->
 
-                            <span class="status published">
-                                Published
-                            </span>
+<div class="details">
 
-                        {% else %}
+    <div class="detail">
+        <small>
+            Questions
+        </small>
 
-                            <span class="status draft">
-                                Draft
-                            </span>
+        <strong>
+            {{ quiz.number_of_questions }}
+        </strong>
+    </div>
 
-                        {% endif %}
+    <div class="detail">
+        <small>
+            Duration
+        </small>
 
+        <strong>
+            {{ quiz.duration }} min
+        </strong>
+    </div>
 
-                        <div class="details">
+    <div class="detail">
+        <small>
+            Total Marks
+        </small>
 
+        <strong>
+            {{ quiz.total_marks }}
+        </strong>
+    </div>
 
-                            <div class="detail">
+    <div class="detail">
+        <small>
+            Passing Marks
+        </small>
 
-                                <small>
-                                    Duration
-                                </small>
+        <strong>
+            {{ quiz.passing_marks }}
+        </strong>
+    </div>
 
-                                <strong>
-                                    {{ quiz.duration }} min
-                                </strong>
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <small>
-                                    Total Marks
-                                </small>
-
-                                <strong>
-                                    {{ quiz.total_marks }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <small>
-                                    Passing Marks
-                                </small>
-
-                                <strong>
-                                    {{ quiz.passing_marks }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="detail">
-
-                                <small>
-                                    Created
-                                </small>
-
-                                <strong>
-                                    {{ quiz.created_at.strftime('%d-%m-%Y') }}
-                                </strong>
-
-                            </div>
-
-
-                        </div>
-<a
-    href="{{ url_for(
-        'teacher.edit_quiz',
-        quiz_id=quiz.id
-    ) }}"
-    style="
-        display: inline-block;
-        margin-top: 10px;
-        padding: 9px 15px;
-        background: #2563eb;
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 600;
-    "
->
-    ✏ Edit Quiz
-</a>
-<div style="margin-top: 20px;">
-    <a href="{{ url_for('teacher.questions', quiz_id=quiz.id) }}"
-       style="
-           display: inline-block;
-           padding: 10px 16px;
-           background: #2563eb;
-           color: white;
-           text-decoration: none;
-           border-radius: 6px;
-           font-weight: 600;
-       ">
-        Manage Questions
-    </a>
 </div>
 
-                    </div>
 
+<!-- =========================
+     PERFORMANCE
+========================== -->
+
+<div class="performance-box">
+
+    <div class="performance-title">
+        📊 Quiz Performance
+    </div>
+
+
+    <div class="performance-grid">
+
+
+        <div class="performance-item">
+
+            <span>
+                👨‍🎓 Students
+            </span>
+
+            <strong>
+                {{ quiz.unique_students }}
+            </strong>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <span>
+                📝 Attempts
+            </span>
+
+            <strong>
+                {{ quiz.total_attempts }}
+            </strong>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <span>
+                📈 Average
+            </span>
+
+            <strong>
+                {{ "%.1f"|format(quiz.average_percentage) }}%
+            </strong>
+
+        </div>
+
+
+        <div class="performance-item">
+
+            <span>
+                🏆 Highest
+            </span>
+
+            <strong>
+                {{ "%.1f"|format(quiz.highest_percentage) }}%
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="pass-fail-row">
+
+        <span class="pass-stat">
+            ✅ Passed:
+            <strong>
+                {{ quiz.passed_attempts }}
+            </strong>
+        </span>
+
+
+        <span class="fail-stat">
+            ❌ Failed:
+            <strong>
+                {{ quiz.failed_attempts }}
+            </strong>
+        </span>
+
+    </div>
+
+
+    {% if quiz.last_attempt %}
+
+        <div class="last-attempt">
+
+            🕒 Last Attempt:
+
+            <strong>
+                {{ quiz.last_attempt.submitted_at.strftime(
+                    '%d-%m-%Y %I:%M %p'
+                ) }}
+            </strong>
+
+        </div>
+
+    {% else %}
+
+        <div class="last-attempt no-attempt">
+
+            📭 No attempts yet
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+                        <!-- CREATED DATE -->
+
+                        <div
+                            style="
+                                color: #64748b;
+                                font-size: 12px;
+                                margin-bottom: 15px;
+                            "
+                        >
+
+                            Created:
+                            {{ quiz.created_at.strftime('%d-%m-%Y') }}
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+<!-- ACTIONS -->
+<div class="quiz-actions">
+
+    <!-- EDIT -->
+    {% if quiz.total_attempts > 0 %}
+
+        <span class="quiz-action locked-action">
+            🔒 Edit Locked
+        </span>
+
+    {% else %}
+
+        <a
+            href="{{ url_for(
+                'teacher.edit_quiz',
+                quiz_id=quiz.id
+            ) }}"
+            class="quiz-action edit-btn"
+        >
+            ✏️ Edit Quiz
+        </a>
+
+    {% endif %}
+
+
+    <!-- QUESTIONS -->
+    {% if quiz.total_attempts > 0 %}
+
+        <span class="quiz-action locked-action">
+            🔒 Questions Locked
+        </span>
+
+    {% else %}
+
+        <a
+            href="{{ url_for(
+                'teacher.questions',
+                quiz_id=quiz.id
+            ) }}"
+            class="quiz-action questions-btn"
+        >
+            ❓ Questions
+        </a>
+
+    {% endif %}
+
+
+    <!-- RESULTS -->
+    <a
+        href="{{ url_for('teacher.results') }}?quiz_id={{ quiz.id }}"
+        class="quiz-action results-btn"
+    >
+        📊 Results
+    </a>
+
+
+    <!-- DUPLICATE -->
+    <form
+        method="POST"
+        action="{{ url_for(
+            'teacher.duplicate_quiz',
+            quiz_id=quiz.id
+        ) }}"
+        style="margin: 0;"
+        onsubmit="
+            return confirm(
+                'Are you sure you want to duplicate this quiz and all its questions?'
+            );
+        "
+    >
+
+        <button
+            type="submit"
+            class="quiz-action duplicate-btn"
+        >
+            📋 Duplicate
+        </button>
+
+    </form>
+
+
+    <!-- DELETE -->
+    {% if quiz.total_attempts > 0 %}
+
+        <span class="quiz-action locked-action">
+            🔒 Delete Locked
+        </span>
+
+    {% else %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'teacher.delete_quiz',
+                quiz_id=quiz.id
+            ) }}"
+            style="margin: 0;"
+            onsubmit="
+                return confirm(
+                    'Are you sure you want to permanently delete this quiz? This action cannot be undone.'
+                );
+            "
+        >
+
+            <button
+                type="submit"
+                class="quiz-action delete-action"
+            >
+                🗑️ Delete
+            </button>
+
+        </form>
+
+    {% endif %}
+
+
+    <!-- PUBLISH / UNPUBLISH -->
+    {% if quiz.status == "published" %}
+
+        {% if quiz.total_attempts > 0 %}
+
+            <span class="quiz-action locked-action">
+                🔒 Unpublish Locked
+            </span>
+
+        {% else %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'teacher.unpublish_quiz',
+                    quiz_id=quiz.id
+                ) }}"
+                style="margin: 0;"
+                onsubmit="
+                    return confirm(
+                        'Are you sure you want to unpublish this quiz?'
+                    );
+                "
+            >
+
+                <button
+                    type="submit"
+                    class="quiz-action unpublish-btn"
+                >
+                    🔒 Unpublish
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    {% else %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'teacher.publish_quiz',
+                quiz_id=quiz.id
+            ) }}"
+            style="margin: 0;"
+            onsubmit="
+                return confirm(
+                    'Are you sure you want to publish this quiz?'
+                );
+            "
+        >
+
+            <button
+                type="submit"
+                class="quiz-action publish-btn"
+            >
+                🚀 Publish Quiz
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+
+
+                    </div>
 
                 {% endfor %}
 
@@ -463,10 +1521,40 @@
             </div>
 
 
+            <!-- NO SEARCH RESULTS -->
+
+            <div
+                class="no-search-results"
+                id="noSearchResults"
+            >
+
+                <div style="font-size: 40px;">
+                    🔍
+                </div>
+
+                <h3 style="margin: 10px 0;">
+                    No quizzes found
+                </h3>
+
+                <p>
+                    Try changing your search or status filter.
+                </p>
+
+            </div>
+
+
         {% else %}
 
 
+            <!-- =========================
+                 NO QUIZZES
+            ========================== -->
+
             <div class="empty">
+
+                <div class="empty-icon">
+                    📝
+                </div>
 
                 <h2>
                     No quizzes found
@@ -485,11 +1573,157 @@
 
             </div>
 
-
         {% endif %}
 
 
     </div>
+
+
+    <!-- =========================
+         SEARCH / FILTER SCRIPT
+    ========================== -->
+
+    {% if quizzes %}
+
+    <script>
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const statusFilter =
+            document.getElementById("statusFilter");
+
+        const quizCards =
+            document.querySelectorAll(".quiz-card");
+
+        const noSearchResults =
+            document.getElementById("noSearchResults");
+
+        const publishedCount =
+            document.getElementById("publishedCount");
+
+        const draftCount =
+            document.getElementById("draftCount");
+
+
+        /* =========================
+           COUNT QUIZZES
+        ========================== */
+
+        let published = 0;
+        let draft = 0;
+
+        quizCards.forEach(function(card) {
+
+            const status =
+                card.dataset.status;
+
+            if (status === "published") {
+                published++;
+            }
+
+            if (status === "draft") {
+                draft++;
+            }
+
+        });
+
+
+        publishedCount.textContent =
+            published;
+
+        draftCount.textContent =
+            draft;
+
+
+        /* =========================
+           FILTER FUNCTION
+        ========================== */
+
+        function filterQuizzes() {
+
+            const searchText =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+            const selectedStatus =
+                statusFilter.value;
+
+            let visibleCount = 0;
+
+
+            quizCards.forEach(function(card) {
+
+                const title =
+                    card.dataset.title;
+
+                const description =
+                    card.dataset.description;
+
+                const status =
+                    card.dataset.status;
+
+
+                const matchesSearch =
+                    title.includes(searchText) ||
+                    description.includes(searchText);
+
+
+                const matchesStatus =
+                    selectedStatus === "all" ||
+                    status === selectedStatus;
+
+
+                if (
+                    matchesSearch &&
+                    matchesStatus
+                ) {
+
+                    card.style.display =
+                        "flex";
+
+                    visibleCount++;
+
+                } else {
+
+                    card.style.display =
+                        "none";
+
+                }
+
+            });
+
+
+            if (visibleCount === 0) {
+
+                noSearchResults.style.display =
+                    "block";
+
+            } else {
+
+                noSearchResults.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        searchInput.addEventListener(
+            "input",
+            filterQuizzes
+        );
+
+
+        statusFilter.addEventListener(
+            "change",
+            filterQuizzes
+        );
+
+    </script>
+
+    {% endif %}
 
 
 </body>

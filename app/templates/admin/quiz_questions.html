@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ quiz.title }} - Questions
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .navbar {
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #1d4ed8
+            );
+
+            color: white;
+            padding: 15px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: white;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .dashboard-btn {
+            background: #1e40af;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+        }
+
+        .description {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .quiz-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .info-box strong {
+            display: block;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+
+        .question-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.06);
+
+            margin-bottom: 18px;
+        }
+
+        .question-number {
+            color: #2563eb;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .marks {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #f8fafc;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .correct {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .correct-label {
+            float: right;
+            font-size: 12px;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 800px) {
+
+            .quiz-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .quiz-info {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="navbar">
+
+    <h2>
+        Online Quiz Management System
+    </h2>
+
+    <div class="nav-buttons">
+
+        <a
+            href="{{ url_for('admin.quizzes') }}"
+            class="dashboard-btn"
+        >
+            ← Quiz Management
+        </a>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+    <!-- QUIZ HEADER -->
+
+    <div class="header">
+
+        <h1>
+            📝 {{ quiz.title }}
+        </h1>
+
+        <div class="description">
+
+            {{ quiz.description or
+               "No description available." }}
+
+        </div>
+
+
+        <div class="quiz-info">
+
+            <div class="info-box">
+
+                <strong>
+                    Questions
+                </strong>
+
+                {{ quiz.number_of_questions }}
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    Duration
+                </strong>
+
+                {{ quiz.duration }} minutes
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    Total Marks
+                </strong>
+
+                {{ quiz.total_marks }}
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    Passing Marks
+                </strong>
+
+                {{ quiz.passing_marks }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUESTIONS -->
+
+    {% if questions %}
+
+        {% for question in questions %}
+
+            <div class="question-card">
+
+                <div class="question-number">
+
+                    Question {{ loop.index }}
+
+                </div>
+
+
+                <div class="question-text">
+
+                    {{ question.question_text }}
+
+                </div>
+
+
+                <div class="marks">
+
+                    Marks: {{ question.marks }}
+
+                    {% if question.negative_marks %}
+
+                        | Negative Marks:
+                        {{ question.negative_marks }}
+
+                    {% endif %}
+
+                </div>
+
+
+                {% for option in question.options %}
+
+                    <div
+                        class="
+                            option
+                            {% if option.is_correct %}
+                                correct
+                            {% endif %}
+                        "
+                    >
+
+                        {{ loop.index }}.
+                        {{ option.option_text }}
+
+                        {% if option.is_correct %}
+
+                            <span class="correct-label">
+                                ✓ Correct Answer
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>
+                No Questions Found
+            </h2>
+
+            <p>
+                This quiz does not contain any questions yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+
+</html>
