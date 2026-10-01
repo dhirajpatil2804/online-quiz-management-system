@@ -14,6 +14,49 @@ from app.models import (
     User
 )
 
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
+from app.extensions import db
+from app.models import User
+
+@teacher.route("/students/add", methods=["GET", "POST"])
+@login_required
+def add_student():
+    if current_user.role != "teacher":
+        flash("Access denied.", "danger")
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not name or not email or not password:
+            flash("Please fill in all fields.", "danger")
+            return render_template("teacher/add_student.html")
+
+        if User.query.filter_by(email=email).first():
+            flash("An account with this email already exists.", "danger")
+            return render_template("teacher/add_student.html")
+
+        student = User(
+            name=name,
+            email=email,
+            role="student",
+            is_active=True
+        )
+        student.set_password(password)
+
+        try:
+            db.session.add(student)
+            db.session.commit()
+            flash("Student added successfully.", "success")
+            return redirect(url_for("teacher.add_student"))
+        except Exception:
+            db.session.rollback()
+            flash("Unable to add student. Please try again.", "danger")
+
+    return render_template("teacher/add_student.html")
 
 # =========================================================
 # TEACHER DASHBOARD

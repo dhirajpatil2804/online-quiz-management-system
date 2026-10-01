@@ -226,6 +226,109 @@
             color: white;
         }
 
+        /* STUDENT ANALYTICS */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+        }
+
+        .analytics-card p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .analytics-value {
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .analytics-card .analytics-note {
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+
+        .analytics-chart {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            margin-bottom: 25px;
+        }
+
+        .analytics-chart h2 {
+            margin-bottom: 20px;
+        }
+
+        .chart-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: minmax(100px, 180px) 1fr 55px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chart-label {
+            font-size: 13px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .chart-track {
+            height: 15px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            border-radius: 20px;
+        }
+
+        .chart-percent {
+            text-align: right;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 500px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-row {
+                grid-template-columns: 90px minmax(0, 1fr) 45px;
+                gap: 8px;
+            }
+        }
         /* Attempt table */
 
         .table-wrapper {
@@ -518,6 +621,108 @@
 
     </div>
 
+    <!-- STUDENT ANALYTICS -->
+
+    <div class="section">
+
+        <h2>📈 My Performance Analytics</h2>
+
+        <div class="analytics-grid">
+
+            <div class="analytics-card">
+                <p>TOTAL ATTEMPTS</p>
+                <div class="analytics-value">
+                    {{ total_attempts }}
+                </div>
+                <p class="analytics-note">Completed quiz attempts</p>
+            </div>
+
+            <div class="analytics-card">
+                <p>QUIZZES PASSED</p>
+                <div class="analytics-value" style="color: #16a34a;">
+                    {{ passed_attempts }}
+                </div>
+                <p class="analytics-note">Attempts meeting passing marks</p>
+            </div>
+
+            <div class="analytics-card">
+                <p>QUIZZES FAILED</p>
+                <div class="analytics-value" style="color: #dc2626;">
+                    {{ failed_attempts }}
+                </div>
+                <p class="analytics-note">Attempts below passing marks</p>
+            </div>
+
+            <div class="analytics-card">
+                <p>AVERAGE SCORE</p>
+                <div class="analytics-value" style="color: #7c3aed;">
+                    {{ "%.1f"|format(average_percentage) }}%
+                </div>
+                <p class="analytics-note">Average across completed attempts</p>
+            </div>
+
+        </div>
+
+        <div class="analytics-card">
+            <p>PASS RATE</p>
+            <div class="analytics-value" style="color: #0891b2;">
+                {{ "%.1f"|format(pass_rate) }}%
+            </div>
+            <div class="chart-track" style="margin-top: 15px;">
+                <div class="chart-fill"
+                     style="width: {{ [pass_rate, 100]|min }}%;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PERFORMANCE BY RECENT ATTEMPT -->
+
+    <div class="analytics-chart">
+
+        <h2>📊 Recent Quiz Performance</h2>
+
+        {% if performance_labels %}
+
+            <div class="chart-bars">
+
+                {% for label in performance_labels %}
+
+                    {% set score = performance_percentages[loop.index0] %}
+
+                    <div class="chart-row">
+
+                        <div class="chart-label">
+                            {{ label }}
+                        </div>
+
+                        <div class="chart-track">
+                            <div class="chart-fill"
+                                 style="width: {{ [[score, 0]|max, 100]|min }}%;">
+                            </div>
+                        </div>
+
+                        <div class="chart-percent">
+                            {{ "%.1f"|format(score) }}%
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+                <h3>No analytics available yet.</h3>
+                <p>Complete a quiz to see your performance here.</p>
+            </div>
+
+        {% endif %}
+
+    </div>
 
     <!-- ATTEMPT HISTORY -->
 

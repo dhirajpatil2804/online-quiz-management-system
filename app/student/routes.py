@@ -40,6 +40,7 @@ def dashboard():
         Quiz.id.desc()
     ).all()
 
+    
     # All submitted attempts of this student
     attempts = QuizAttempt.query.filter_by(
         student_id=current_user.id,
@@ -47,6 +48,67 @@ def dashboard():
     ).order_by(
         QuizAttempt.submitted_at.desc()
     ).all()
+
+    # -----------------------------------------------------
+    # STUDENT ANALYTICS
+    # -----------------------------------------------------
+
+    total_attempts = len(attempts)
+
+    passed_attempts = sum(
+        1 for attempt in attempts
+        if attempt.quiz
+        and attempt.score is not None
+        and attempt.score >= attempt.quiz.passing_marks
+    )
+
+    failed_attempts = total_attempts - passed_attempts
+
+    percentages = [
+        (attempt.score / attempt.quiz.total_marks) * 100
+        for attempt in attempts
+        if attempt.quiz
+        and attempt.score is not None
+        and attempt.quiz.total_marks > 0
+    ]
+
+    average_percentage = (
+        sum(percentages) / len(percentages)
+        if percentages else 0
+    )
+
+    pass_rate = (
+        (passed_attempts / total_attempts) * 100
+        if total_attempts else 0
+    )
+
+    recent_attempts = sorted(
+        attempts,
+        key=lambda attempt: attempt.submitted_at or attempt.started_at
+    )[-10:]
+
+    performance_labels = [
+        attempt.quiz.title if attempt.quiz else "Quiz"
+        for attempt in recent_attempts
+    ]
+
+    performance_percentages = [
+        round(
+            (attempt.score / attempt.quiz.total_marks) * 100,
+            2
+        )
+        if attempt.quiz
+        and attempt.score is not None
+        and attempt.quiz.total_marks > 0
+        else 0
+        for attempt in recent_attempts
+    ]
+
+    # -----------------------------------------------------
+    # Create attempt number for each quiz
+    # -----------------------------------------------------
+
+    attempt_numbers = {}
 
     # -----------------------------------------------------
     # Create attempt number for each quiz
@@ -117,7 +179,14 @@ def dashboard():
         attempts=attempts,
         in_progress_map=in_progress_map,
         permission_map=permission_map,
-        latest_attempt_map=latest_attempt_map
+        latest_attempt_map=latest_attempt_map,
+        total_attempts=total_attempts,
+        passed_attempts=passed_attempts,
+        failed_attempts=failed_attempts,
+        average_percentage=average_percentage,
+        pass_rate=pass_rate,
+        performance_labels=performance_labels,
+        performance_percentages=performance_percentages
     )
 
 

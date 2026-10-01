@@ -776,6 +776,72 @@ def toggle_quiz_status(quiz_id):
         url_for("admin.quizzes")
     )
 
+
+# =========================================================
+# ADMIN DELETE QUIZ
+# =========================================================
+
+@admin.route("/quizzes/<int:quiz_id>/delete", methods=["POST"])
+@login_required
+def delete_quiz(quiz_id):
+
+    if current_user.role != "admin":
+        return "Access Denied", 403
+
+    quiz = Quiz.query.get(quiz_id)
+
+    if not quiz:
+        flash("Quiz not found.", "danger")
+        return redirect(url_for("admin.quizzes"))
+
+    # Do not delete quizzes with student attempts.
+    attempt_exists = QuizAttempt.query.filter_by(
+        quiz_id=quiz.id
+    ).first()
+
+    if attempt_exists:
+        flash(
+            "This quiz cannot be deleted because students have attempted it.",
+            "danger"
+        )
+        return redirect(url_for("admin.quizzes"))
+
+    quiz_title = quiz.title
+
+    try:
+        # Remove questions and their options first.
+        questions = Question.query.filter_by(
+            quiz_id=quiz.id
+        ).all()
+
+        from app.models import Option
+
+        for question in questions:
+            Option.query.filter_by(
+                question_id=question.id
+            ).delete(synchronize_session=False)
+
+            db.session.delete(question)
+
+        db.session.delete(quiz)
+        db.session.commit()
+
+        flash(
+            f"Quiz '{quiz_title}' deleted successfully.",
+            "success"
+        )
+
+    except Exception:
+        db.session.rollback()
+        flash(
+            "Unable to delete this quiz. Please check its related records.",
+            "danger"
+        )
+
+    return redirect(url_for("admin.quizzes"))
+
+
+
 # =========================================================
 # STUDENT MANAGEMENT
 # =========================================================

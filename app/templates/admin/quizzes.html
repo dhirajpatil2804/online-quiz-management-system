@@ -486,6 +486,16 @@
     👁️ View Questions
 </a>
 
+<!-- VIEW RESULTS -->
+<a
+    href="{{ url_for('admin.reports', quiz_id=quiz.id) }}"
+    class="btn blue"
+>
+    📊 View Results
+</a>
+
+
+
 
                         <!-- PUBLISH / DRAFT -->
 
@@ -525,6 +535,25 @@
                             {% endif %}
 
                         </form>
+
+<!-- DELETE QUIZ -->
+<form
+    method="POST"
+    action="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}"
+    style="display:inline;"
+>
+    <button
+        type="submit"
+        class="btn"
+        style="background:#dc2626;"
+        onclick="return confirm(
+            'Are you sure you want to delete this quiz? This cannot be undone.'
+        );"
+    >
+        🗑️ Delete Quiz
+    </button>
+</form>
+
 
 
                     </div>
