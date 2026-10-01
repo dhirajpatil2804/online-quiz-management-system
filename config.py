@@ -1,4 +1,3 @@
-```python
 import os
 from dotenv import load_dotenv
 
@@ -26,4 +25,3 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-```
