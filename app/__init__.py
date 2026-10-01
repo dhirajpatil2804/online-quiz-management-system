@@ -32,11 +32,11 @@ def create_app():
     from app.student import student
     app.register_blueprint(student)
 
+    from flask import redirect, url_for
+
     @app.route("/")
     def home():
-        return """
-        <h1>Online Quiz Management System</h1>
-        <p>Flask + PostgreSQL is connected successfully!</p>
-        """
+        return redirect(url_for("auth.login"))
+    
 
     return app
