@@ -538,9 +538,7 @@
                     </td>
 
                     <td>
-                        {{ attempt.submitted_at.strftime(
-                            "%d-%m-%Y %I:%M %p"
-                        ) }}
+                        {{ attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") if attempt.submitted_at_ist else "N/A" }}
                     </td>
 
                 </tr>

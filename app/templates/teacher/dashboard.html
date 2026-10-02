@@ -844,15 +844,12 @@
 
                         <td>
 
-                            {% if attempt.submitted_at %}
-
-                                {{ attempt.submitted_at.strftime("%d-%m-%Y %I:%M %p") }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
+                          
+{% if attempt.submitted_at_ist %}
+    {{ attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
+{% else %}
+    -
+{% endif %}
 
                         </td>
 

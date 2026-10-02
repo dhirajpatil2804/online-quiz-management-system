@@ -16,7 +16,14 @@ from werkzeug.security import generate_password_hash
 from app.admin import admin
 from app.extensions import db
 from app.models import User, Quiz, Question, QuizAttempt
+from datetime import datetime, timezone, timedelta
 
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def to_ist(dt):
+    if dt is None:
+        return None
+    return dt.replace(tzinfo=timezone.utc).astimezone(IST)
 
 # =========================================================
 # ADMIN DASHBOARD
@@ -1287,6 +1294,8 @@ def reports():
         return "Access Denied", 403
 
     attempts = get_filtered_report_attempts()
+    for attempt in attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     total_attempts = len(attempts)
     passed_attempts = 0
@@ -1339,6 +1348,8 @@ def export_reports_csv():
         return "Access Denied", 403
 
     attempts = get_filtered_report_attempts()
+    for attempt in attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     csv_data = (
         "Student,Email,Quiz,Teacher,Attempt,Score,Total Marks,"
@@ -1360,8 +1371,7 @@ def export_reports_csv():
         )
 
         submitted = (
-            attempt.submitted_at.strftime("%d-%m-%Y %I:%M %p")
-            if attempt.submitted_at else ""
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") if attempt.submitted_at_ist else ""
         )
 
         row = [
@@ -1405,6 +1415,8 @@ def export_reports_excel():
     from io import BytesIO
 
     attempts = get_filtered_report_attempts()
+    for attempt in attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
     data = []
 
     for attempt in attempts:
@@ -1494,6 +1506,8 @@ def export_reports_pdf():
     from reportlab.lib.styles import getSampleStyleSheet
 
     attempts = get_filtered_report_attempts()
+    for attempt in attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     table_data = [[
         "Student",
@@ -1522,8 +1536,7 @@ def export_reports_pdf():
         )
 
         submitted = (
-            attempt.submitted_at.strftime("%d-%m-%Y")
-            if attempt.submitted_at else ""
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") if attempt.submitted_at_ist else ""
         )
 
         table_data.append([
@@ -1738,6 +1751,8 @@ def analytics():
     # -----------------------------------------------------
 
     recent_attempts = attempts[:10]
+    for attempt in recent_attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     return render_template(
         "admin/analytics.html",

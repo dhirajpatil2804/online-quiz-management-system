@@ -1,4 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def to_ist(dt):
+    if dt is None:
+        return None
+    return dt.replace(tzinfo=timezone.utc).astimezone(IST)
 from flask import render_template, request, redirect, url_for, flash, Response, send_file
 
 from flask_login import login_required, current_user
@@ -113,6 +120,9 @@ def dashboard():
     ).order_by(
         QuizAttempt.submitted_at.desc()
     ).all()
+
+    for attempt in teacher_attempts:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     total_attempts = len(teacher_attempts)
 
@@ -246,6 +256,8 @@ def quizzes():
     # ---------------------------------------------------------
 
     for quiz in all_quizzes:
+        # Convert quiz creation timestamp from stored UTC to IST for display.
+        quiz.created_at_ist = to_ist(quiz.created_at)
 
         attempts = QuizAttempt.query.filter_by(
             quiz_id=quiz.id,
@@ -344,6 +356,9 @@ def quizzes():
         ).order_by(
             QuizAttempt.submitted_at.desc()
         ).first()
+
+        if last_attempt:
+            last_attempt.submitted_at_ist = to_ist(last_attempt.submitted_at)
 
         quiz.last_attempt = last_attempt
 
@@ -472,6 +487,8 @@ def results():
         return "Access Denied", 403
 
     results = get_teacher_filtered_results()
+    for attempt in results:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     total_results = len(results)
     passed_results = 0
@@ -555,6 +572,8 @@ def export_results_csv():
         return "Access Denied", 403
 
     results = get_teacher_filtered_results()
+    for attempt in results:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     csv_data = (
         "Student,Email,Quiz,Attempt,Score,Total Marks,"
@@ -582,10 +601,8 @@ def export_results_csv():
         )
 
         submitted = (
-            attempt.submitted_at.strftime(
-                "%d-%m-%Y %I:%M %p"
-            )
-            if attempt.submitted_at
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p")
+            if attempt.submitted_at_ist
             else ""
         )
 
@@ -631,6 +648,8 @@ def export_results_excel():
     from io import BytesIO
 
     results = get_teacher_filtered_results()
+    for attempt in results:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     data = []
 
@@ -655,10 +674,8 @@ def export_results_excel():
         )
 
         submitted = (
-            attempt.submitted_at.strftime(
-                "%d-%m-%Y %I:%M %p"
-            )
-            if attempt.submitted_at
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p")
+            if attempt.submitted_at_ist
             else ""
         )
 
@@ -751,6 +768,8 @@ def export_results_pdf():
     from reportlab.lib.styles import getSampleStyleSheet
 
     results = get_teacher_filtered_results()
+    for attempt in results:
+        attempt.submitted_at_ist = to_ist(attempt.submitted_at)
 
     table_data = [[
         "Student",
@@ -784,8 +803,8 @@ def export_results_pdf():
         )
 
         submitted = (
-            attempt.submitted_at.strftime("%d-%m-%Y")
-            if attempt.submitted_at
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p")
+            if attempt.submitted_at_ist
             else ""
         )
 
@@ -2078,14 +2097,12 @@ def edit_quiz(quiz_id):
 # PUBLISH QUIZ
 # =========================================================
 
-
 @teacher.route(
     "/quizzes/<int:quiz_id>/publish",
     methods=["POST"]
 )
 @login_required
 def publish_quiz(quiz_id):
-
     if current_user.role != "teacher":
         return "Access Denied", 403
 
@@ -2098,54 +2115,91 @@ def publish_quiz(quiz_id):
         return "Quiz not found or access denied.", 404
 
     if quiz.status == "published":
-        flash(
-            "This quiz is already published.",
-            "info"
-        )
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
+        flash("This quiz is already published.", "info")
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
 
-    # Publish the quiz
+    questions = Question.query.filter_by(
+        quiz_id=quiz.id
+    ).order_by(
+        Question.question_order.asc()
+    ).all()
+
+    question_count = len(questions)
+
+    if question_count < quiz.number_of_questions:
+        remaining = quiz.number_of_questions - question_count
+        flash(
+            f"You selected {quiz.number_of_questions} questions, "
+            f"but only {question_count} questions have been added. "
+            f"Please add {remaining} more question"
+            f"{'s' if remaining != 1 else ''} before publishing.",
+            "danger"
+        )
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+    if question_count > quiz.number_of_questions:
+        extra = question_count - quiz.number_of_questions
+        flash(
+            f"You selected {quiz.number_of_questions} questions, "
+            f"but {question_count} questions have been added. "
+            f"Please remove {extra} question"
+            f"{'s' if extra != 1 else ''} before publishing.",
+            "danger"
+        )
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+    if not questions:
+        flash("You must add at least one question before publishing.", "danger")
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+    for index, question in enumerate(questions, start=1):
+        if not question.question_text or not question.question_text.strip():
+            flash(f"Question {index} is incomplete. Question text is required.", "danger")
+            return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+        if question.marks is None or question.marks <= 0:
+            flash(f"Question {index} has invalid marks.", "danger")
+            return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+        options = Option.query.filter_by(question_id=question.id).all()
+
+        if len(options) != 4:
+            flash(
+                f"Question {index} must have exactly 4 options. Currently it has {len(options)}.",
+                "danger"
+            )
+            return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+        for option in options:
+            if not option.option_text or not option.option_text.strip():
+                flash(f"Question {index} has an empty option. Please complete all four options.", "danger")
+                return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+        correct_options = [option for option in options if option.is_correct]
+        if len(correct_options) != 1:
+            flash(f"Question {index} must have exactly one correct answer.", "danger")
+            return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+    question_marks = sum(question.marks for question in questions)
+    if question_marks != quiz.total_marks:
+        flash(
+            f"Question marks total {question_marks}, but quiz total marks are {quiz.total_marks}. "
+            "Please add or edit questions before publishing.",
+            "danger"
+        )
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
+    if quiz.passing_marks > quiz.total_marks:
+        flash("Passing marks cannot be greater than total marks.", "danger")
+        return redirect(url_for("teacher.questions", quiz_id=quiz.id))
+
     quiz.status = "published"
     db.session.commit()
-
-    flash("Quiz published successfully!", "success")
-
-    return redirect(
-        url_for("teacher.questions", quiz_id=quiz.id)
-    )
+    flash("Quiz published successfully.", "success")
+    return redirect(url_for("teacher.questions", quiz_id=quiz.id))
 
 
-
-    if current_user.role != "teacher":
-        return "Access Denied", 403
-
-    quiz = Quiz.query.filter_by(
-        id=quiz_id,
-        created_by=current_user.id
-    ).first()
-
-    if not quiz:
-        return "Quiz not found or access denied.", 404
-
-    if quiz.status == "published":
-
-        flash(
-            "This quiz is already published.",
-            "info"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-        # =========================================================
+# =========================================================
 # UNPUBLISH QUIZ
 # =========================================================
 
@@ -2155,7 +2209,6 @@ def publish_quiz(quiz_id):
 )
 @login_required
 def unpublish_quiz(quiz_id):
-
     if current_user.role != "teacher":
         return "Access Denied", 403
 
@@ -2167,274 +2220,15 @@ def unpublish_quiz(quiz_id):
     if not quiz:
         return "Quiz not found or access denied.", 404
 
-    # ---------------------------------------------------------
-    # CHECK IF STUDENTS HAVE ATTEMPTED THE QUIZ
-    # ---------------------------------------------------------
-
-    attempt_exists = QuizAttempt.query.filter_by(
-        quiz_id=quiz.id
-    ).first()
-
+    attempt_exists = QuizAttempt.query.filter_by(quiz_id=quiz.id).first()
     if attempt_exists:
-
         flash(
             "This quiz cannot be unpublished because students have already attempted it.",
             "danger"
         )
-
-        return redirect(
-            url_for("teacher.quizzes")
-        )
-
-    # ---------------------------------------------------------
-    # UNPUBLISH
-    # ---------------------------------------------------------
+        return redirect(url_for("teacher.quizzes"))
 
     quiz.status = "draft"
-
     db.session.commit()
-
-    flash(
-        "Quiz unpublished successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for("teacher.quizzes")
-    )
-
-    # Get all questions
-    questions = Question.query.filter_by(
-        quiz_id=quiz.id
-    ).order_by(
-        Question.question_order.asc()
-    ).all()
-
-    question_count = len(questions)
-
-    # =====================================================
-    # CHECK NUMBER OF QUESTIONS
-    # =====================================================
-
-    if question_count < quiz.number_of_questions:
-
-        remaining = (
-            quiz.number_of_questions
-            - question_count
-        )
-
-        flash(
-            f"You selected {quiz.number_of_questions} questions, "
-            f"but only {question_count} questions have been added. "
-            f"Please add {remaining} more question"
-            f"{'s' if remaining != 1 else ''} before publishing.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-
-    if question_count > quiz.number_of_questions:
-
-        extra = (
-            question_count
-            - quiz.number_of_questions
-        )
-
-        flash(
-            f"You selected {quiz.number_of_questions} questions, "
-            f"but {question_count} questions have been added. "
-            f"Please remove {extra} question"
-            f"{'s' if extra != 1 else ''} before publishing.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-
-    # =====================================================
-    # CHECK QUESTIONS EXIST
-    # =====================================================
-
-    if not questions:
-
-        flash(
-            "You must add at least one question before publishing.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-
-    # =====================================================
-    # CHECK QUESTION COMPLETENESS
-    # =====================================================
-
-    for index, question in enumerate(
-        questions,
-        start=1
-    ):
-
-        if not question.question_text.strip():
-
-            flash(
-                f"Question {index} is incomplete. "
-                f"Question text is required.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "teacher.questions",
-                    quiz_id=quiz.id
-                )
-            )
-
-        if question.marks is None or question.marks <= 0:
-
-            flash(
-                f"Question {index} has invalid marks.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "teacher.questions",
-                    quiz_id=quiz.id
-                )
-            )
-
-        # Get options
-        options = Option.query.filter_by(
-            question_id=question.id
-        ).all()
-
-        # Exactly 4 options
-        if len(options) != 4:
-
-            flash(
-                f"Question {index} must have exactly 4 options. "
-                f"Currently it has {len(options)}.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "teacher.questions",
-                    quiz_id=quiz.id
-                )
-            )
-
-        # Every option must have text
-        for option in options:
-
-            if not option.option_text.strip():
-
-                flash(
-                    f"Question {index} has an empty option. "
-                    f"Please complete all four options.",
-                    "danger"
-                )
-
-                return redirect(
-                    url_for(
-                        "teacher.questions",
-                        quiz_id=quiz.id
-                    )
-                )
-
-        # Exactly one correct answer
-        correct_options = [
-            option
-            for option in options
-            if option.is_correct
-        ]
-
-        if len(correct_options) != 1:
-
-            flash(
-                f"Question {index} must have exactly one correct answer.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "teacher.questions",
-                    quiz_id=quiz.id
-                )
-            )
-
-    # =====================================================
-    # CHECK TOTAL MARKS
-    # =====================================================
-
-    question_marks = sum(
-        question.marks
-        for question in questions
-    )
-
-    if question_marks != quiz.total_marks:
-
-        flash(
-            f"Question marks total {question_marks}, "
-            f"but quiz total marks are {quiz.total_marks}. "
-            f"Please add or edit questions before publishing.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-
-    # =====================================================
-    # CHECK PASSING MARKS
-    # =====================================================
-
-    if quiz.passing_marks > quiz.total_marks:
-
-        flash(
-            "Passing marks cannot be greater than total marks.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "teacher.questions",
-                quiz_id=quiz.id
-            )
-        )
-
-    # =====================================================
-    # PUBLISH QUIZ
-    # =====================================================
-
-    quiz.status = "published"
-
-    db.session.commit()
-
-    flash(
-        "Quiz published successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "teacher.questions",
-            quiz_id=quiz.id
-        )
-    )
+    flash("Quiz unpublished successfully.", "success")
+    return redirect(url_for("teacher.quizzes"))

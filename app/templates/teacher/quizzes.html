@@ -1290,13 +1290,13 @@
 
         <div class="last-attempt">
 
-            🕒 Last Attempt:
 
-            <strong>
-                {{ quiz.last_attempt.submitted_at.strftime(
-                    '%d-%m-%Y %I:%M %p'
-                ) }}
-            </strong>
+🕒 Last Attempt:
+
+<strong>
+    {{ quiz.last_attempt.submitted_at_ist.strftime('%d-%m-%Y %I:%M %p')
+       if quiz.last_attempt.submitted_at_ist else 'N/A' }}
+</strong>
 
         </div>
 
@@ -1323,9 +1323,10 @@
                             "
                         >
 
-                            Created:
-                            {{ quiz.created_at.strftime('%d-%m-%Y') }}
 
+Created:
+{{ quiz.created_at_ist.strftime('%d-%m-%Y %I:%M %p')
+   if quiz.created_at_ist else 'N/A' }}
                         </div>
 
 
