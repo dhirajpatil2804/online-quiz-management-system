@@ -676,9 +676,7 @@
                     {% if attempt.started_at %}
 
                         {{
-                            attempt.started_at.strftime(
-                                "%d-%m-%Y %I:%M %p"
-                            )
+                            attempt_started_at_ist.strftime("%d-%m-%Y %I:%M %p")
                         }}
 
                     {% else %}
@@ -703,9 +701,7 @@
                     {% if attempt.submitted_at %}
 
                         {{
-                            attempt.submitted_at.strftime(
-                                "%d-%m-%Y %I:%M %p"
-                            )
+                            {{ attempt_submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
                         }}
 
                     {% else %}
@@ -856,9 +852,7 @@
                                     {% if item.submitted_at %}
 
                                         {{
-                                            item.submitted_at.strftime(
-                                                "%d-%m-%Y %I:%M %p"
-                                            )
+                                            {{ item.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
                                         }}
 
                                     {% else %}
