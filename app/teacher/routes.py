@@ -2078,12 +2078,48 @@ def edit_quiz(quiz_id):
 # PUBLISH QUIZ
 # =========================================================
 
+
 @teacher.route(
     "/quizzes/<int:quiz_id>/publish",
     methods=["POST"]
 )
 @login_required
 def publish_quiz(quiz_id):
+
+    if current_user.role != "teacher":
+        return "Access Denied", 403
+
+    quiz = Quiz.query.filter_by(
+        id=quiz_id,
+        created_by=current_user.id
+    ).first()
+
+    if not quiz:
+        return "Quiz not found or access denied.", 404
+
+    if quiz.status == "published":
+        flash(
+            "This quiz is already published.",
+            "info"
+        )
+        return redirect(
+            url_for(
+                "teacher.questions",
+                quiz_id=quiz.id
+            )
+        )
+
+    # Publish the quiz
+    quiz.status = "published"
+    db.session.commit()
+
+    flash("Quiz published successfully!", "success")
+
+    return redirect(
+        url_for("teacher.questions", quiz_id=quiz.id)
+    )
+
+
 
     if current_user.role != "teacher":
         return "Access Denied", 403
