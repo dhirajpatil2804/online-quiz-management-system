@@ -173,20 +173,6 @@ def dashboard():
 
             latest_attempt_map[attempt.quiz_id] = attempt
 
-    ist = timezone(timedelta(hours=5, minutes=30))
-
-    def to_ist(dt):
-        if dt is None:
-            return None
-        return dt.replace(tzinfo=timezone.utc).astimezone(ist)
-
-    attempt_started_at_ist = to_ist(attempt.started_at)
-    attempt_submitted_at_ist = to_ist(attempt.submitted_at)
-
-    for item in all_attempts:
-        item.submitted_at_ist = to_ist(item.submitted_at)
-
-
     return render_template(
         "student/dashboard.html",
         quizzes=quizzes,
@@ -200,8 +186,6 @@ def dashboard():
         average_percentage=average_percentage,
         pass_rate=pass_rate,
         performance_labels=performance_labels,
-        attempt_started_at_ist=attempt_started_at_ist,
-        attempt_submitted_at_ist=attempt_submitted_at_ist,
         performance_percentages=performance_percentages
     )
 
@@ -651,6 +635,7 @@ def quiz_result(attempt_id):
     ).order_by(
         QuizAttempt.submitted_at.asc()
     ).all()
+
     ist = timezone(timedelta(hours=5, minutes=30))
 
     def to_ist(dt):
@@ -676,5 +661,7 @@ def quiz_result(attempt_id):
         percentage=percentage,
         passed=passed,
         attempt_number=attempt_number,
-        all_attempts=all_attempts
+        all_attempts=all_attempts,
+        attempt_started_at_ist=attempt_started_at_ist,
+        attempt_submitted_at_ist=attempt_submitted_at_ist
     )
