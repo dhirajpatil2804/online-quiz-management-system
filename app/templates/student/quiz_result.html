@@ -698,17 +698,15 @@
 
                 <span>
 
-                    {% if attempt.submitted_at %}
+{% if attempt_submitted_at_ist %}
 
-                        {{
-                            {{ attempt_submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
-                        }}
+    {{ attempt_submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
 
-                    {% else %}
+{% else %}
 
-                        -
+    -
 
-                    {% endif %}
+{% endif %}
 
                 </span>
 
