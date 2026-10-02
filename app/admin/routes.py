@@ -1434,8 +1434,8 @@ def export_reports_excel():
         )
 
         submitted = (
-            attempt.submitted_at.strftime("%d-%m-%Y %I:%M %p")
-            if attempt.submitted_at else ""
+            attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p")
+            if attempt.submitted_at_ist else ""
         )
 
         data.append({
