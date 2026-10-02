@@ -844,9 +844,7 @@
                                     {% if attempt.submitted_at %}
 
                                         {{
-                                            attempt.submitted_at.strftime(
-                                                "%d-%m-%Y %I:%M %p"
-                                            )
+                                            {{ attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
                                         }}
 
                                     {% else %}
