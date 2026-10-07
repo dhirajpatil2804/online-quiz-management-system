@@ -73,11 +73,14 @@ def users():
         User.id.desc()
     ).all()
 
+    # Convert user creation time from UTC to IST
+    for user in all_users:
+        user.created_at_ist = to_ist(user.created_at)
+
     return render_template(
         "admin/users.html",
         users=all_users
     )
-
 
 # =========================================================
 # ADD USER

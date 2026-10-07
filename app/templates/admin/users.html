@@ -277,10 +277,13 @@
                             {% endif %}
 
                         </td>
-
-                        <td>
-                            {{ user.created_at.strftime('%d-%m-%Y %H:%M') }}
-                        </td>
+<td>
+    {% if user.created_at_ist %}
+        {{ user.created_at_ist.strftime('%d-%m-%Y %I:%M %p') }}
+    {% else %}
+        -
+    {% endif %}
+</td>
 
                     </tr>
 
