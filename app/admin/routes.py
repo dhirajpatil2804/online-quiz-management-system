@@ -722,6 +722,7 @@ def edit_quiz(quiz_id):
 # ADMIN PUBLISH / UNPUBLISH QUIZ
 # =========================================================
 
+
 @admin.route(
     "/quizzes/<int:quiz_id>/toggle-status",
     methods=["POST"]
@@ -735,56 +736,144 @@ def toggle_quiz_status(quiz_id):
     quiz = Quiz.query.get(quiz_id)
 
     if not quiz:
+        flash("Quiz not found.", "danger")
+        return redirect(url_for("admin.quizzes"))
 
-        flash(
-            "Quiz not found.",
-            "danger"
-        )
+    from app.models import QuizAttempt, Option
 
-        return redirect(
-            url_for("admin.quizzes")
-        )
-
-    from app.models import QuizAttempt
-
+    # Prevent changing status if a student has attempted this quiz.
     attempt_exists = QuizAttempt.query.filter_by(
         quiz_id=quiz.id
     ).first()
 
     if attempt_exists:
-
         flash(
-            "Quiz status cannot be changed because a student has already attempted it.",
+            "Quiz status cannot be changed because a student "
+            "has already attempted it.",
             "warning"
         )
+        return redirect(url_for("admin.quizzes"))
 
-        return redirect(
-            url_for("admin.quizzes")
-        )
-
+    # Unpublish an already-published quiz.
     if quiz.status == "published":
-
         quiz.status = "draft"
+        db.session.commit()
 
         flash(
             f"'{quiz.title}' has been moved to draft.",
             "warning"
         )
+        return redirect(url_for("admin.quizzes"))
 
-    else:
+    # Fetch all questions before publishing.
+    questions = Question.query.filter_by(
+        quiz_id=quiz.id
+    ).order_by(
+        Question.question_order.asc()
+    ).all()
 
-        quiz.status = "published"
+    question_count = len(questions)
+    required_count = quiz.number_of_questions
+
+    # Check for missing questions.
+    if question_count < required_count:
+        remaining = required_count - question_count
 
         flash(
-            f"'{quiz.title}' has been published.",
-            "success"
+            f"You selected {required_count} questions, "
+            f"but only {question_count} questions have been added. "
+            f"Please add {remaining} more question"
+            f"{'s' if remaining != 1 else ''} before publishing.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.quiz_questions", quiz_id=quiz.id)
         )
 
+    # Check for extra questions.
+    if question_count > required_count:
+        extra = question_count - required_count
+
+        flash(
+            f"You selected {required_count} questions, "
+            f"but {question_count} questions have been added. "
+            f"Please remove {extra} question"
+            f"{'s' if extra != 1 else ''} before publishing.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.quiz_questions", quiz_id=quiz.id)
+        )
+
+    if not questions:
+        flash(
+            "You must add at least one question before publishing.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.quiz_questions", quiz_id=quiz.id)
+        )
+
+    # Validate every question and its options.
+    for index, question in enumerate(questions, start=1):
+
+        if not question.question_text or not question.question_text.strip():
+            flash(
+                f"Question {index} is incomplete. "
+                "Question text is required.",
+                "danger"
+            )
+            return redirect(
+                url_for("admin.quiz_questions", quiz_id=quiz.id)
+            )
+
+        if question.marks is None or question.marks <= 0:
+            flash(
+                f"Question {index} has invalid marks.",
+                "danger"
+            )
+            return redirect(
+                url_for("admin.quiz_questions", quiz_id=quiz.id)
+            )
+
+        options = Option.query.filter_by(
+            question_id=question.id
+        ).all()
+
+        if len(options) != 4:
+            flash(
+                f"Question {index} must have exactly 4 options. "
+                f"Currently it has {len(options)}.",
+                "danger"
+            )
+            return redirect(
+                url_for("admin.quiz_questions", quiz_id=quiz.id)
+            )
+
+        for option in options:
+            if not option.option_text or not option.option_text.strip():
+                flash(
+                    f"Question {index} has an empty option. "
+                    "Please complete all four options.",
+                    "danger"
+                )
+                return redirect(
+                    url_for("admin.quiz_questions", quiz_id=quiz.id)
+                )
+
+    # Publish only after every validation passes.
+    quiz.status = "published"
     db.session.commit()
 
-    return redirect(
-        url_for("admin.quizzes")
+    flash(
+        f"'{quiz.title}' has been published.",
+        "success"
     )
+
+    return redirect(url_for("admin.quizzes"))
+
+
+
 
 
 # =========================================================
