@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Quiz Results | Teacher</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1450px;
+            margin: 30px auto;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #4f46e5
+            );
+
+            color: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow:
+                0 8px 25px rgba(37, 99, 235, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: white;
+            color: #2563eb;
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #eff6ff;
+        }
+
+        /* Flash messages */
+
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .flash-message.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 5px solid #16a34a;
+        }
+
+        .flash-message.danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 5px solid #dc2626;
+        }
+
+        .flash-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 5px solid #2563eb;
+        }
+
+        /* Filters */
+
+        .filter-card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-card h2 {
+            margin-bottom: 18px;
+            font-size: 21px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            border-color: #2563eb;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 17px;
+        }
+
+        .filter-btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 7px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .apply-btn {
+            background: #2563eb;
+        }
+
+        .reset-btn {
+            background: #6b7280;
+        }
+
+        /* Statistics */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .stat-number {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .passed-number {
+            color: #16a34a;
+        }
+
+        .failed-number {
+            color: #dc2626;
+        }
+
+        /* Export */
+
+        .export-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.07);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .export-card h3 {
+            font-size: 18px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .csv-btn {
+            background: #16a34a;
+        }
+
+        .excel-btn {
+            background: #2563eb;
+        }
+
+        .pdf-btn {
+            background: #dc2626;
+        }
+
+        /* Table */
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
+
+            overflow-x: auto;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1250px;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+            padding: 14px 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 2px solid #dbeafe;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .score {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .percentage {
+            font-weight: bold;
+        }
+
+        .passed {
+            color: #15803d;
+            background: #dcfce7;
+            padding: 6px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .failed {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 6px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .attempt-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #3730a3;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Retake */
+
+        .retake-box {
+            min-width: 210px;
+        }
+
+        .retake-form {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .retake-form input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .retake-form input:focus {
+            border-color: #2563eb;
+        }
+
+        .retake-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .retake-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6b7280;
+        }
+
+        .no-results-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .filters {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .container {
+                width: 94%;
+                margin: 15px auto;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .filters,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                📊 Quiz Results
+            </h1>
+
+            <p>
+                View student quiz performance,
+                filter results and manage retake permissions.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('teacher.dashboard') }}"
+            class="back-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Flash Messages -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-container">
+
+                {% for category, message in messages %}
+
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- Filters -->
+
+    <div class="filter-card">
+
+        <h2>
+            🔎 Filter Results
+        </h2>
+
+        <form
+            method="GET"
+            action="{{ url_for('teacher.results') }}"
+        >
+
+            <div class="filters">
+
+
+                <!-- Student -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Student
+                    </label>
+
+                    <select name="student_id">
+
+                        <option value="">
+                            All Students
+                        </option>
+
+                        {% for student in students %}
+
+                            <option
+                                value="{{ student.id }}"
+                                {% if request.args.get('student_id') == student.id|string %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ student.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Quiz -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Quiz
+                    </label>
+
+                    <select name="quiz_id">
+
+                        <option value="">
+                            All Quizzes
+                        </option>
+
+                        {% for quiz in quizzes %}
+
+                            <option
+                                value="{{ quiz.id }}"
+                                {% if request.args.get('quiz_id') == quiz.id|string %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ quiz.title }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Result -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Result
+                    </label>
+
+                    <select name="result">
+
+                        <option value="">
+                            All Results
+                        </option>
+
+                        <option
+                            value="PASS"
+                            {% if request.args.get('result') == 'PASS' %}
+                                selected
+                            {% endif %}
+                        >
+                            PASS
+                        </option>
+
+                        <option
+                            value="FAIL"
+                            {% if request.args.get('result') == 'FAIL' %}
+                                selected
+                            {% endif %}
+                        >
+                            FAIL
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- From Date -->
+
+                <div class="filter-group">
+
+                    <label>
+                        From Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_from"
+                        value="{{ request.args.get('date_from', '') }}"
+                    >
+
+                </div>
+
+
+                <!-- To Date -->
+
+                <div class="filter-group">
+
+                    <label>
+                        To Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_to"
+                        value="{{ request.args.get('date_to', '') }}"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="filter-buttons">
+
+                <button
+                    type="submit"
+                    class="filter-btn apply-btn"
+                >
+                    🔍 Apply Filters
+                </button>
+
+                <a
+                    href="{{ url_for('teacher.results') }}"
+                    class="filter-btn reset-btn"
+                >
+                    🔄 Reset
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- Statistics -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TOTAL RESULTS
+            </div>
+
+            <div class="stat-number">
+                {{ total_results }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                PASSED
+            </div>
+
+            <div class="stat-number passed-number">
+                {{ passed_results }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                FAILED
+            </div>
+
+            <div class="stat-number failed-number">
+                {{ failed_results }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                AVERAGE PERCENTAGE
+            </div>
+
+            <div class="stat-number">
+                {{ "%.2f"|format(average_percentage) }}%
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Export -->
+
+    <div class="export-card">
+
+        <h3>
+            📥 Export Results
+        </h3>
+
+        <div class="export-buttons">
+
+            <a
+                href="{{ url_for(
+                    'teacher.export_results_csv',
+                    student_id=request.args.get('student_id', ''),
+                    quiz_id=request.args.get('quiz_id', ''),
+                    result=request.args.get('result', ''),
+                    date_from=request.args.get('date_from', ''),
+                    date_to=request.args.get('date_to', '')
+                ) }}"
+                class="export-btn csv-btn"
+            >
+                📥 CSV
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'teacher.export_results_excel',
+                    student_id=request.args.get('student_id', ''),
+                    quiz_id=request.args.get('quiz_id', ''),
+                    result=request.args.get('result', ''),
+                    date_from=request.args.get('date_from', ''),
+                    date_to=request.args.get('date_to', '')
+                ) }}"
+                class="export-btn excel-btn"
+            >
+                📊 Excel
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'teacher.export_results_pdf',
+                    student_id=request.args.get('student_id', ''),
+                    quiz_id=request.args.get('quiz_id', ''),
+                    result=request.args.get('result', ''),
+                    date_from=request.args.get('date_from', ''),
+                    date_to=request.args.get('date_to', '')
+                ) }}"
+                class="export-btn pdf-btn"
+            >
+                📄 PDF
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Results -->
+
+    <div class="card">
+
+        <h2>
+            Student Results
+        </h2>
+
+
+        {% if results %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Quiz
+                        </th>
+
+                        <th>
+                            Attempt
+                        </th>
+
+                        <th>
+                            Score
+                        </th>
+
+                        <th>
+                            Percentage
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Submitted
+                        </th>
+
+                        <th>
+                            Allow Retake
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for attempt in results %}
+
+                        <tr>
+
+
+                            <!-- Number -->
+
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+
+                            <!-- Student -->
+
+                            <td>
+
+                                <strong>
+                                    {{ attempt.student.name }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Email -->
+
+                            <td>
+                                {{ attempt.student.email }}
+                            </td>
+
+
+                            <!-- Quiz -->
+
+                            <td>
+
+                                <strong>
+                                    {{ attempt.quiz.title }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Attempt -->
+
+                            <td>
+
+                                <span class="attempt-badge">
+                                    Attempt
+                                    {{ attempt.display_attempt_number }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- Score -->
+
+                            <td>
+
+                                <span class="score">
+
+                                    {{ attempt.score }}
+
+                                    /
+
+                                    {{ attempt.quiz.total_marks }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- Percentage -->
+
+                            <td>
+
+                                {% if attempt.quiz.total_marks > 0 %}
+
+                                    {% set percentage =
+                                        (
+                                            attempt.score /
+                                            attempt.quiz.total_marks
+                                        ) * 100
+                                    %}
+
+                                    <span class="percentage">
+
+                                        {{ "%.2f"|format(percentage) }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    0%
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Pass / Fail -->
+
+                            <td>
+
+                                {% if
+                                    attempt.score >=
+                                    attempt.quiz.passing_marks
+                                %}
+
+                                    <span class="passed">
+                                        PASSED
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="failed">
+                                        FAILED
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Submitted -->
+
+                            <td>
+{% if attempt.submitted_at_ist %}
+    {{ attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
+{% else %}
+    -
+{% endif %}
+
+                            </td>
+
+
+                            <!-- Retake -->
+
+                            <td class="retake-box">
+
+                                <form
+                                    method="POST"
+                                    action="{{
+                                        url_for(
+                                            'teacher.allow_retake',
+                                            attempt_id=attempt.id
+                                        )
+                                    }}"
+                                    class="retake-form"
+                                >
+
+                                    <input
+                                        type="text"
+                                        name="reason"
+                                        placeholder="Reason for retake"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="retake-btn"
+                                        onclick="return confirm(
+                                            'Allow one additional attempt for this student?'
+                                        );"
+                                    >
+                                        Allow Retake
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        {% else %}
+
+            <div class="no-results">
+
+                <div class="no-results-icon">
+                    📋
+                </div>
+
+                <h3>
+                    No Results Available
+                </h3>
+
+                <p>
+                    No students have submitted any quizzes yet,
+                    or no records match the selected filters.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>

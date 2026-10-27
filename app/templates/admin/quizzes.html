@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Quiz Management | Online Quiz Management System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .navbar {
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #1d4ed8
+            );
+
+            color: white;
+            padding: 15px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: white;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .dashboard-btn {
+            background: #1e40af;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .quiz-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+
+            margin-bottom: 18px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .quiz-card h2 {
+            margin: 0 0 8px;
+        }
+
+        .description {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .details {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 10px;
+
+            margin-top: 18px;
+        }
+
+        .detail {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 7px;
+        }
+
+        .detail strong {
+            display: block;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .draft {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .published {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 7px;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .blue {
+            background: #2563eb;
+        }
+
+        .green {
+            background: #16a34a;
+        }
+
+        .orange {
+            background: #ea580c;
+        }
+
+        .gray {
+            background: #64748b;
+        }
+
+        .purple {
+            background: #7c3aed;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .alert {
+            padding: 13px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 900px) {
+
+            .details {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .details {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .quiz-header {
+                flex-direction: column;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <div class="nav-buttons">
+
+            <a
+                href="{{ url_for('admin.dashboard') }}"
+                class="dashboard-btn"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-btn"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <h1>
+                📝 Quiz Management
+            </h1>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- QUIZZES -->
+
+        {% if quizzes %}
+
+            {% for quiz in quizzes %}
+
+                <div class="quiz-card">
+
+
+                    <div class="quiz-header">
+
+                        <div>
+
+                            <h2>
+                                {{ quiz.title }}
+                            </h2>
+
+                            <div class="description">
+
+                                {{ quiz.description or
+                                   "No description available." }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            {% if quiz.status == "published" %}
+
+                                <span class="status published">
+                                    ● Published
+                                </span>
+
+                            {% else %}
+
+                                <span class="status draft">
+                                    ● Draft
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DETAILS -->
+
+                    <div class="details">
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Duration
+                            </strong>
+
+                            {{ quiz.duration }} minutes
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Questions
+                            </strong>
+
+                            {{ quiz.number_of_questions }}
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Total Marks
+                            </strong>
+
+                            {{ quiz.total_marks }}
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Passing Marks
+                            </strong>
+
+                            {{ quiz.passing_marks }}
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Created By
+                            </strong>
+
+                            {% if quiz.creator %}
+
+                                {{ quiz.creator.name }}
+
+                            {% else %}
+
+                                Unknown
+
+                            {% endif %}
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="actions">
+
+
+                        <!-- EDIT -->
+
+                        <a
+                            href="{{ url_for(
+                                'admin.edit_quiz',
+                                quiz_id=quiz.id
+                            ) }}"
+                            class="btn orange"
+                        >
+                            ✏️ Edit Quiz
+                        </a>
+
+
+                        <!-- VIEW QUESTIONS -->
+
+<a
+    href="{{ url_for(
+        'admin.quiz_questions',
+        quiz_id=quiz.id
+    ) }}"
+    class="btn purple"
+>
+    👁️ View Questions
+</a>
+
+<!-- VIEW RESULTS -->
+<a
+    href="{{ url_for('admin.reports', quiz_id=quiz.id) }}"
+    class="btn blue"
+>
+    📊 View Results
+</a>
+
+
+
+
+                        <!-- PUBLISH / DRAFT -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'admin.toggle_quiz_status',
+                                quiz_id=quiz.id
+                            ) }}"
+                            style="display:inline;"
+                        >
+
+                            {% if quiz.status == "published" %}
+
+                                <button
+                                    type="submit"
+                                    class="btn gray"
+                                    onclick="return confirm(
+                                        'Move this quiz back to draft?'
+                                    );"
+                                >
+                                    Move to Draft
+                                </button>
+
+                            {% else %}
+
+                                <button
+                                    type="submit"
+                                    class="btn green"
+                                    onclick="return confirm(
+                                        'Publish this quiz?'
+                                    );"
+                                >
+                                    Publish Quiz
+                                </button>
+
+                            {% endif %}
+
+                        </form>
+
+<!-- DELETE QUIZ -->
+<form
+    method="POST"
+    action="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}"
+    style="display:inline;"
+>
+    <button
+        type="submit"
+        class="btn"
+        style="background:#dc2626;"
+        onclick="return confirm(
+            'Are you sure you want to delete this quiz? This cannot be undone.'
+        );"
+    >
+        🗑️ Delete Quiz
+    </button>
+</form>
+
+
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+
+                <h2>
+                    No quizzes found
+                </h2>
+
+                <p>
+                    Teachers have not created any quizzes yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+</body>
+
+</html>

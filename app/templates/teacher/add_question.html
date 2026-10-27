@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Add Question - {{ quiz.title }}</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .navbar {
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #1d4ed8
+            );
+
+            color: white;
+
+            padding: 14px 24px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: white;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            margin-left: 8px;
+
+            font-weight: 600;
+        }
+
+        .dashboard-btn {
+            background: #1e40af;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 900px;
+
+            margin: 35px auto;
+
+            padding: 0 20px;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+
+            color: #64748b;
+        }
+
+        .form-card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        textarea {
+            min-height: 120px;
+
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .marks-row {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+        }
+
+        .options-title {
+
+            margin-top: 30px;
+
+            margin-bottom: 18px;
+
+            font-size: 20px;
+
+            color: #1e3a8a;
+        }
+
+        .option-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+        }
+
+        .option-label {
+
+            width: 35px;
+
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #e0e7ff;
+
+            color: #1d4ed8;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+
+            flex-shrink: 0;
+        }
+
+        .option-row input[type="text"] {
+            flex: 1;
+        }
+
+        .correct-section {
+
+            background: #f0fdf4;
+
+            border: 1px solid #bbf7d0;
+
+            padding: 18px;
+
+            border-radius: 8px;
+
+            margin-top: 25px;
+        }
+
+        .correct-section label {
+            margin-bottom: 12px;
+        }
+
+        .radio-group {
+
+            display: flex;
+
+            gap: 25px;
+
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            font-weight: normal;
+
+            margin: 0;
+        }
+
+        .buttons {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 30px;
+
+            gap: 15px;
+        }
+
+        .btn {
+
+            padding: 12px 20px;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+        .back-btn {
+
+            background: #64748b;
+
+            color: white;
+        }
+
+        .save-btn {
+
+            background: #16a34a;
+
+            color: white;
+
+            flex: 1;
+        }
+
+        .alert {
+
+            padding: 13px 16px;
+
+            border-radius: 7px;
+
+            margin-bottom: 20px;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        @media (max-width: 650px) {
+
+            .marks-row {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar h2 {
+                font-size: 16px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <div class="nav-buttons">
+
+            <a
+                href="{{ url_for('teacher.dashboard') }}"
+                class="dashboard-btn">
+
+                Dashboard
+
+            </a>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-btn">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>
+                Add Question
+            </h1>
+
+            <p>
+                Quiz:
+                <strong>{{ quiz.title }}</strong>
+            </p>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div class="form-card">
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'teacher.add_question',
+                    quiz_id=quiz.id
+                ) }}"
+            >
+
+                <div class="form-group">
+
+                    <label for="question_text">
+                        Question
+                    </label>
+
+                    <textarea
+                        id="question_text"
+                        name="question_text"
+                        placeholder="Enter your question..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="marks-row">
+
+                    <div class="form-group">
+
+                        <label for="marks">
+                            Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            id="marks"
+                            name="marks"
+                            value="1"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="negative_marks">
+                            Negative Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            id="negative_marks"
+                            name="negative_marks"
+                            value="0"
+                            min="0"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <h2 class="options-title">
+                    Answer Options
+                </h2>
+
+
+                <div class="option-row">
+
+                    <div class="option-label">
+                        A
+                    </div>
+
+                    <input
+                        type="text"
+                        name="option1"
+                        placeholder="Enter option A"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <div class="option-label">
+                        B
+                    </div>
+
+                    <input
+                        type="text"
+                        name="option2"
+                        placeholder="Enter option B"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <div class="option-label">
+                        C
+                    </div>
+
+                    <input
+                        type="text"
+                        name="option3"
+                        placeholder="Enter option C"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <div class="option-label">
+                        D
+                    </div>
+
+                    <input
+                        type="text"
+                        name="option4"
+                        placeholder="Enter option D"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="correct-section">
+
+                    <label>
+                        Select Correct Answer
+                    </label>
+
+                    <div class="radio-group">
+
+                        <label class="radio-option">
+
+                            <input
+                                type="radio"
+                                name="correct_option"
+                                value="1"
+                                required
+                            >
+
+                            A
+
+                        </label>
+
+
+                        <label class="radio-option">
+
+                            <input
+                                type="radio"
+                                name="correct_option"
+                                value="2"
+                            >
+
+                            B
+
+                        </label>
+
+
+                        <label class="radio-option">
+
+                            <input
+                                type="radio"
+                                name="correct_option"
+                                value="3"
+                            >
+
+                            C
+
+                        </label>
+
+
+                        <label class="radio-option">
+
+                            <input
+                                type="radio"
+                                name="correct_option"
+                                value="4"
+                            >
+
+                            D
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <a
+                        href="{{ url_for(
+                            'teacher.questions',
+                            quiz_id=quiz.id
+                        ) }}"
+                        class="btn back-btn">
+
+                        ← Back
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn save-btn">
+
+                        Save Question
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

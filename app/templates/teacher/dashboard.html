@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Teacher Dashboard - Online Quiz Management System
+    </title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1e293b;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #2563eb;
+            color: white;
+
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            font-size: 22px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+
+            background: #dc2626;
+
+            padding: 9px 16px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #b91c1c;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            padding: 30px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            background: white;
+
+            padding: 28px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        /* =========================
+           STAT CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 22px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h3 {
+            color: #64748b;
+
+            font-size: 14px;
+
+            margin-bottom: 12px;
+        }
+
+        .number {
+            font-size: 30px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+        }
+
+        .card-subtitle {
+            margin-top: 6px;
+
+            color: #94a3b8;
+
+            font-size: 12px;
+        }
+
+        /* CARD COLORS */
+
+        .green .number {
+            color: #16a34a;
+        }
+
+        .yellow .number {
+            color: #d97706;
+        }
+
+        .purple .number {
+            color: #7c3aed;
+        }
+
+        .red .number {
+            color: #dc2626;
+        }
+
+        /* =========================
+           PERFORMANCE SECTION
+        ========================= */
+
+        .performance {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .performance-card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            text-align: center;
+        }
+
+        .performance-card .icon {
+            font-size: 28px;
+
+            margin-bottom: 8px;
+        }
+
+        .performance-card h3 {
+            font-size: 14px;
+
+            color: #64748b;
+
+            margin-bottom: 8px;
+        }
+
+        .performance-card .value {
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+        }
+
+        /* =========================
+           QUICK ACTIONS
+        ========================= */
+
+        .quick-actions {
+            margin-bottom: 25px;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .quick-actions h2 {
+            color: #1e293b;
+
+            margin-bottom: 20px;
+        }
+
+        .actions {
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 12px 20px;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+
+            transition: background 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .green-btn {
+            background: #16a34a;
+        }
+
+        .green-btn:hover {
+            background: #15803d;
+        }
+
+        .purple-btn {
+            background: #7c3aed;
+        }
+
+        .purple-btn:hover {
+            background: #6d28d9;
+        }
+
+        /* =========================
+           RECENT RESULTS
+        ========================= */
+
+        .recent-results {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+            overflow-x: auto;
+        }
+
+        .recent-results h2 {
+            margin-bottom: 20px;
+
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 800px;
+        }
+
+        th {
+            background: #2563eb;
+
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+
+            font-size: 13px;
+        }
+
+        td {
+            padding: 13px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            font-size: 13px;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .pass {
+            display: inline-block;
+
+            background: #dcfce7;
+
+            color: #15803d;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+            font-size: 12px;
+        }
+
+        .fail {
+            display: inline-block;
+
+            background: #fee2e2;
+
+            color: #b91c1c;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+            font-size: 12px;
+        }
+
+        .no-results {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #64748b;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1200px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .performance {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .navbar h2 {
+                font-size: 17px;
+            }
+
+            .container {
+                padding: 18px;
+            }
+
+            .welcome {
+                padding: 20px;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .performance {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <div class="navbar">
+
+        <h2>
+            Online Quiz Management System
+        </h2>
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- =========================
+             WELCOME
+        ========================== -->
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, {{ user.name }} 👋
+            </h1>
+
+            <p>
+                You are logged in as a Teacher.
+                Manage quizzes, questions and student performance from here.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             MAIN STATISTICS
+        ========================== -->
+
+        <div class="cards">
+
+
+            <!-- My Quizzes -->
+
+            <div class="card">
+
+                <h3>
+                    📝 My Quizzes
+                </h3>
+
+                <div class="number">
+                    {{ total_quizzes }}
+                </div>
+
+                <div class="card-subtitle">
+                    Total quizzes created
+                </div>
+
+            </div>
+
+
+            <!-- Published -->
+
+            <div class="card green">
+
+                <h3>
+                    🟢 Published
+                </h3>
+
+                <div class="number">
+                    {{ published_quizzes }}
+                </div>
+
+                <div class="card-subtitle">
+                    Live quizzes
+                </div>
+
+            </div>
+
+
+            <!-- Draft -->
+
+            <div class="card yellow">
+
+                <h3>
+                    🟡 Draft
+                </h3>
+
+                <div class="number">
+                    {{ draft_quizzes }}
+                </div>
+
+                <div class="card-subtitle">
+                    Unpublished quizzes
+                </div>
+
+            </div>
+
+
+            <!-- Questions -->
+
+            <div class="card purple">
+
+                <h3>
+                    ❓ Questions
+                </h3>
+
+                <div class="number">
+                    {{ total_questions }}
+                </div>
+
+                <div class="card-subtitle">
+                    Total questions
+                </div>
+
+            </div>
+
+
+            <!-- Students -->
+
+            <div class="card">
+
+                <h3>
+                    👨‍🎓 Students
+                </h3>
+
+                <div class="number">
+                    {{ total_students }}
+                </div>
+
+                <div class="card-subtitle">
+                    Students attempted
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             PERFORMANCE STATISTICS
+        ========================== -->
+
+        <div class="performance">
+
+
+            <!-- Attempts -->
+
+            <div class="performance-card">
+
+                <div class="icon">
+                    📊
+                </div>
+
+                <h3>
+                    Total Attempts
+                </h3>
+
+                <div class="value">
+                    {{ total_attempts }}
+                </div>
+
+            </div>
+
+
+            <!-- Passed -->
+
+            <div class="performance-card">
+
+                <div class="icon">
+                    ✅
+                </div>
+
+                <h3>
+                    Passed
+                </h3>
+
+                <div class="value">
+                    {{ passed_results }}
+                </div>
+
+            </div>
+
+
+            <!-- Average -->
+
+            <div class="performance-card">
+
+                <div class="icon">
+                    📈
+                </div>
+
+                <h3>
+                    Average Percentage
+                </h3>
+
+                <div class="value">
+                    {{ "%.1f"|format(average_percentage) }}%
+                </div>
+
+            </div>
+
+
+            <!-- Highest -->
+
+            <div class="performance-card">
+
+                <div class="icon">
+                    🏆
+                </div>
+
+                <h3>
+                    Highest Percentage
+                </h3>
+
+                <div class="value">
+                    {{ "%.1f"|format(highest_percentage) }}%
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <div class="quick-actions">
+
+            <h2>
+                Quick Actions
+            </h2>
+
+            <div class="actions">
+
+
+                <a
+                    href="{{ url_for('teacher.create_quiz') }}"
+                    class="action-btn"
+                >
+                    + Create Quiz
+                </a>
+
+
+                <a
+                    href="{{ url_for('teacher.quizzes') }}"
+                    class="action-btn green-btn"
+                >
+                    📚 Manage Quizzes
+                </a>
+
+
+                <a
+                    href="{{ url_for('teacher.results') }}"
+                    class="action-btn purple-btn"
+                >
+                    📊 View Results
+                </a>
+                <a href="{{ url_for('teacher.add_student') }}"class="action-btn">
+    ➕ Add Student
+</a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             RECENT RESULTS
+        ========================== -->
+
+        <div class="recent-results">
+
+            <h2>
+                📋 Recent Quiz Results
+            </h2>
+
+
+            {% if recent_results %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Quiz
+                        </th>
+
+                        <th>
+                            Attempt
+                        </th>
+
+                        <th>
+                            Score
+                        </th>
+
+                        <th>
+                            Percentage
+                        </th>
+
+                        <th>
+                            Result
+                        </th>
+
+                        <th>
+                            Submitted
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for attempt in recent_results %}
+
+                    <tr>
+
+                        <td>
+                            {{ attempt.student.name }}
+                        </td>
+
+                        <td>
+                            {{ attempt.quiz.title }}
+                        </td>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            {{ attempt.score }}
+                            /
+                            {{ attempt.quiz.total_marks }}
+                        </td>
+
+                        <td>
+                            {{ "%.1f"|format(attempt.display_percentage) }}%
+                        </td>
+
+                        <td>
+
+                            {% if attempt.score is not none
+                                  and attempt.score >= attempt.quiz.passing_marks %}
+
+                                <span class="pass">
+                                    PASS
+                                </span>
+
+                            {% else %}
+
+                                <span class="fail">
+                                    FAIL
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                          
+{% if attempt.submitted_at_ist %}
+    {{ attempt.submitted_at_ist.strftime("%d-%m-%Y %I:%M %p") }}
+{% else %}
+    -
+{% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+            {% else %}
+
+            <div class="no-results">
+
+                📭 No quiz results available yet.
+
+                <br><br>
+
+                Once students complete your quizzes,
+                their results will appear here.
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>
